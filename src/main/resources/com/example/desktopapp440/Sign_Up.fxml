@@ -6,7 +6,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="661.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.desktopapp440.SIgnUpController">
    <children>
-      <Button fx:id="SignUp" layoutX="273.0" layoutY="346.0" mnemonicParsing="false" onAction="#onSignUpClick" text="Sign me up!" />
+      <Button fx:id="SignUp" disable="true" layoutX="273.0" layoutY="346.0" mnemonicParsing="false" onAction="#onSignUpClick" text="Sign me up!" />
       <Label layoutX="15.0" layoutY="179.0" prefHeight="19.0" prefWidth="123.0" text="Email Address">
          <font>
             <Font size="18.0" />
@@ -23,7 +23,7 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <CheckBox fx:id="TermsCheck" layoutX="109.0" layoutY="320.0" mnemonicParsing="false" onAction="#onTermsCheckOnClick" prefHeight="26.0" prefWidth="407.0" text="I agree to Terms and Conditions and allow the collection of my user data" />
+      <CheckBox fx:id="TermsCheck" layoutX="15.0" layoutY="320.0" mnemonicParsing="false" onAction="#onTermsCheckOnClick" prefHeight="26.0" prefWidth="407.0" text="I agree to Terms and Conditions and allow the collection of my user data" />
       <TextField fx:id="FirstUser" layoutX="15.0" layoutY="53.0" prefHeight="26.0" prefWidth="249.0" promptText="First" />
       <TextField fx:id="LastUser" layoutX="14.0" layoutY="83.0" prefHeight="26.0" prefWidth="249.0" promptText="Last" />
       <Label layoutX="15.0" layoutY="116.0" prefHeight="27.0" prefWidth="123.0" text="Username">
@@ -33,7 +33,6 @@
       </Label>
       <TextField fx:id="UsernameUser" layoutX="14.0" layoutY="144.0" prefHeight="26.0" prefWidth="249.0" promptText="Username123" />
       <Label fx:id="FirstText" layoutX="273.0" layoutY="58.0" prefHeight="18.0" prefWidth="175.0" textFill="#d11515" />
-      <Label fx:id="LastText" layoutX="273.0" layoutY="87.0" prefHeight="18.0" prefWidth="175.0" textFill="#d11515" />
       <Label fx:id="UsernameText" layoutX="273.0" layoutY="148.0" prefHeight="18.0" prefWidth="175.0" textFill="#d11515" />
       <Label fx:id="EmailText" layoutX="273.0" layoutY="210.0" prefHeight="18.0" prefWidth="192.0" textFill="#d11515" />
       <TextField fx:id="PasswordEmail1" layoutX="15.0" layoutY="294.0" prefHeight="26.0" prefWidth="250.0" promptText="Confirm password" />
