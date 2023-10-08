@@ -5,14 +5,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class LogInController {
 
      String SelectStatement = "select Username , Password from users where Username = ? and Password = ?";
 
      String sqlUser = "root";
-     String sqlPass = "BonkRipper420$";
+     String sqlPass = "rooter";
     String url = "jdbc:mysql://localhost:3306/desktopappdb";
 
     @FXML
@@ -33,27 +37,27 @@ public class LogInController {
     }
 
     private boolean ValidateInput() {
-        try (
-            Connection connection = DriverManager.getConnection(url, sqlUser, sqlPass)){
+        try {Connection con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/desktopappdb", sqlUser,sqlPass);
             System.out.println("DBConnected");
-            PreparedStatement preparedStatement = connection.prepareStatement(SelectStatement);
+            ResultSet resultSet;
+             PreparedStatement preparedStatement = con.prepareStatement(SelectStatement) ;
 
-            String UsernameInput = UserName_Field.getText();
-            String PasswordInput = Password_Field.getText();
+                String UsernameInput = UserName_Field.getText();
+                String PasswordInput = Password_Field.getText();
 
-            preparedStatement.setString(1, UsernameInput);
-            preparedStatement.setString(2, PasswordInput);
+                preparedStatement.setString(1, UsernameInput);
+                preparedStatement.setString(2, PasswordInput);
 
 
-            System.out.println("Connection");
-            ResultSet resultSet = preparedStatement.executeQuery();
+                System.out.println("Connection");
+                resultSet = preparedStatement.executeQuery();
+
             if (resultSet.next()) {
                     return true;
             }
 
 
         } catch (SQLException e) {
-            e.printStackTrace();
             System.out.println("SQL Error: " + e.getMessage());
         }
 
