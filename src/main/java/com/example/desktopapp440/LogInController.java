@@ -16,7 +16,7 @@ public class LogInController {
      String SelectStatement = "select Username , Password from users where Username = ? and Password = ?";
 
      String sqlUser = "root";
-     String sqlPass = "Christian104722002!";
+     String sqlPass = "root";
     String url = "jdbc:mysql://localhost:3306/desktopappdb";
 
     @FXML
