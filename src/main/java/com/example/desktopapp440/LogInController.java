@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -19,26 +20,35 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class LogInController {
-    String SelectStatement = "select Username , Password from users where Username = ? and Password = ?";
-    String sqlUser = "root";
-    String sqlPass = "root";
-    String url = "jdbc:mysql://localhost:3306/desktopappdb";
-
-    @FXML
-    Button LoginButton;
-    @FXML
-    Button SignUpButton;
-    @FXML
-    TextField UserName_Field;
-    @FXML
-    PasswordField Password_Field;
+    private String SelectStatement = "select* from users where Username = ? and Password = ?";
+    private String sqlUser = "root";
+    private String sqlPass = "root";
+    private String url = "jdbc:mysql://localhost:3306/desktopappdb";
 
 
     @FXML
-    public void onLogInButtonClick() {
+    public Button LoginButton;
+    @FXML
+    public  Button SignUpButton;
+    @FXML
+    public TextField UserName_Field;
+    @FXML
+    public PasswordField Password_Field;
+    @FXML
+    public Label ErrorLabel;
+
+
+    @FXML
+    public void onLogInButtonClick(ActionEvent event) throws IOException {
         if(ValidateInput()){
             System.out.println("all good");
+            Parent root = FXMLLoader.load(getClass().getResource("Home_Page.fxml"));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
         }
+        ErrorLabel.setText("*Incorrect Username or Password*");
     }
 
     @FXML
@@ -51,7 +61,9 @@ public class LogInController {
     }
 
     private boolean ValidateInput() {
-        try {Connection con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/desktopappdb", sqlUser,sqlPass);
+        try {
+            Connection con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/desktopappdb", sqlUser,sqlPass);
+
             System.out.println("DBConnected");
             ResultSet resultSet;
              PreparedStatement preparedStatement = con.prepareStatement(SelectStatement) ;
@@ -67,7 +79,16 @@ public class LogInController {
                 resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
+                if( (UsernameInput.equals(resultSet.getString("Username"))) && PasswordInput.equals(resultSet.getString("Password "))) {
+                    UserGetterNSetter User;
+                    User = new UserGetterNSetter();
+                    User.setUsername(resultSet.getString(("Username")));
+                    User.setPassword(resultSet.getString("Password"));
+                    User.setFirstName(resultSet.getString("FirstName"));
+                    User.setLastName(resultSet.getString("LastName"));
+                    User.setEmail(resultSet.getString("Email"));
                     return true;
+                }
             }
 
 
