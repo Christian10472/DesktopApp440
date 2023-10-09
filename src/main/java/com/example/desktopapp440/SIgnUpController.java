@@ -22,7 +22,6 @@ public class SIgnUpController {
     private boolean allGood;
     private Stage stage;
     private Scene scene;
-    private Parent root;
     @FXML
     private Label FirstText, UsernameText, EmailText, PasswordText;
     @FXML
@@ -44,8 +43,8 @@ public class SIgnUpController {
     protected void onSignUpClick(ActionEvent event) throws IOException {
         allGood = true;
         //Checking if any parameters are null
-        doPasswordsMatch();
         isUserPropmptEmpty();
+        doPasswordsMatch();
         //checking if parameters are valid to database
         if(allGood == true){
             doesUserExist();
