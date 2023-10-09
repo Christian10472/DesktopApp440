@@ -24,6 +24,7 @@ public class LogInController {
     private String sqlUser = "root";
     private String sqlPass = "root";
     private String url = "jdbc:mysql://localhost:3306/desktopappdb";
+    private UserGetterNSetter User;
 
 
     @FXML
@@ -42,11 +43,15 @@ public class LogInController {
     public void onLogInButtonClick(ActionEvent event) throws IOException {
         if(ValidateInput()){
             System.out.println("all good");
-            Parent root = FXMLLoader.load(getClass().getResource("Home_Page.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Home_Page.fxml"));
+            Parent root = loader.load();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
             stage.setScene(scene);
+            HomePageController controller = loader.getController();
+            controller.initialiseHomepage(User);
             stage.show();
+
         }
         ErrorLabel.setText("*Incorrect Username or Password*");
     }
@@ -79,8 +84,8 @@ public class LogInController {
                 resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                if( (UsernameInput.equals(resultSet.getString("Username"))) && PasswordInput.equals(resultSet.getString("Password "))) {
-                    UserGetterNSetter User;
+                if( (UsernameInput.equals(resultSet.getString("Username"))) && PasswordInput.equals(resultSet.getString("Password"))) {
+
                     User = new UserGetterNSetter();
                     User.setUsername(resultSet.getString(("Username")));
                     User.setPassword(resultSet.getString("Password"));
