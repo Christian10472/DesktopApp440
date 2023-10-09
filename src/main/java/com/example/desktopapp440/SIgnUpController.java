@@ -50,7 +50,7 @@ public class SIgnUpController {
             doesUserExist();
             if(allGood == true){
                 addUser();
-                LogInScreen(event);
+                SuccessScreen(event);
             }
 
         }
@@ -138,8 +138,8 @@ public class SIgnUpController {
         }
     }
 
-        public void LogInScreen(ActionEvent event) throws IOException {
-            Parent root = FXMLLoader.load(getClass().getResource("Log_In.fxml"));
+        public void SuccessScreen(ActionEvent event) throws IOException {
+            Parent root = FXMLLoader.load(getClass().getResource("SignUpSuccess.fxml"));
             stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             scene = new Scene(root);
             stage.setScene(scene);
