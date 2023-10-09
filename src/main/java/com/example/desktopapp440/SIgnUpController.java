@@ -18,7 +18,7 @@ import java.sql.*;
 public class SIgnUpController {
 
     private String password = "root";
-    private String sqlPass = "Christian104722002!";
+    private String sqlPass ;
     private boolean allGood;
     private Stage stage;
     private Scene scene;
