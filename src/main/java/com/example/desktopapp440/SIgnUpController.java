@@ -1,22 +1,32 @@
 package com.example.desktopapp440;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.*;
 
 public class SIgnUpController {
 
     private String password = "root";
-    private String sqlPass ;
+    private String sqlPass = "Christian104722002!";
     private boolean allGood;
+    private Stage stage;
+    private Scene scene;
+    private Parent root;
     @FXML
     private Label FirstText, UsernameText, EmailText, PasswordText;
     @FXML
-    private TextField FirstUser, LastUser, UsernameUser, EmailUser, PasswordUser;
+    private TextField FirstUser, LastUser, UsernameUser, EmailUser, PasswordUser, PasswordConfirmUser;
     @FXML
     private CheckBox TermsCheck;
     @FXML
@@ -31,15 +41,17 @@ public class SIgnUpController {
         }
     }
     @FXML
-    protected void onSignUpClick() {
+    protected void onSignUpClick(ActionEvent event) throws IOException {
         allGood = true;
         //Checking if any parameters are null
+        doPasswordsMatch();
         isUserPropmptEmpty();
         //checking if parameters are valid to database
         if(allGood == true){
             doesUserExist();
             if(allGood == true){
                 addUser();
+                LogInScreen(event);
             }
 
         }
@@ -47,6 +59,10 @@ public class SIgnUpController {
     }
 
     public void isUserPropmptEmpty(){
+        FirstText.setText("");
+        UsernameText.setText("");
+        EmailText.setText("");
+        PasswordText.setText("");
         if((isNull(FirstUser) == true) || (isNull(LastUser) == true)){
             FirstText.setText("*Please enter a valid name");
         }
@@ -72,13 +88,13 @@ public class SIgnUpController {
     public void doesUserExist(){
         try{
             Connection con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/desktopappdb", "root", sqlPass);
-            System.out.println("rahhh");
             String SQL = "SELECT * FROM Users WHERE Username = ?;";
             PreparedStatement pstmt = con.prepareStatement(SQL);
             pstmt.setString(1, UsernameUser.getText());
             ResultSet rs = pstmt.executeQuery();
 
-            if(rs.next()) {
+            if(rs.next()){
+                UsernameText.setText("*Username is already taken");
                 allGood = false;
             }
 
@@ -87,11 +103,19 @@ public class SIgnUpController {
             pstmt.setString(1, EmailUser.getText());
             rs = pstmt.executeQuery();
             if(rs.next()) {
+                EmailText.setText("*Email is already in use");
                allGood = false;
             }
         } catch (Exception e) {
             System.out.println("Error connecting to database");
             System.out.println(e.getMessage());
+            allGood = false;
+        }
+    }
+
+    public void doPasswordsMatch(){
+        if ((PasswordUser.getText()).equals(PasswordConfirmUser.getText()) == false) {
+            PasswordText.setText("*Passwords do not match");
             allGood = false;
         }
     }
@@ -115,4 +139,11 @@ public class SIgnUpController {
         }
     }
 
+        public void LogInScreen(ActionEvent event) throws IOException {
+            Parent root = FXMLLoader.load(getClass().getResource("Log_In.fxml"));
+            stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        }
 }

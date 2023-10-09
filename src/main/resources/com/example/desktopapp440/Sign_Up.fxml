@@ -35,7 +35,7 @@
       <Label fx:id="FirstText" layoutX="273.0" layoutY="58.0" prefHeight="18.0" prefWidth="175.0" textFill="#d11515" />
       <Label fx:id="UsernameText" layoutX="273.0" layoutY="148.0" prefHeight="18.0" prefWidth="175.0" textFill="#d11515" />
       <Label fx:id="EmailText" layoutX="273.0" layoutY="210.0" prefHeight="18.0" prefWidth="192.0" textFill="#d11515" />
-      <TextField fx:id="PasswordEmail1" layoutX="15.0" layoutY="294.0" prefHeight="26.0" prefWidth="250.0" promptText="Confirm password" />
+      <TextField fx:id="PasswordConfirmUser" layoutX="15.0" layoutY="294.0" prefHeight="26.0" prefWidth="250.0" promptText="Confirm password" />
       <Label fx:id="PasswordText" layoutX="273.0" layoutY="272.0" prefHeight="18.0" prefWidth="192.0" textFill="#d11515" />
    </children>
 </AnchorPane>
