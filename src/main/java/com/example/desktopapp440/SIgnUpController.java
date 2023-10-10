@@ -39,6 +39,15 @@ public class SIgnUpController {
             SignUp.setDisable(true);
         }
     }
+
+    @FXML
+    protected void gotoLogIn(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("Log_In.fxml"));
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
     @FXML
     protected void onSignUpClick(ActionEvent event) throws IOException {
         allGood = true;
@@ -145,4 +154,6 @@ public class SIgnUpController {
             stage.setScene(scene);
             stage.show();
         }
+
+
 }

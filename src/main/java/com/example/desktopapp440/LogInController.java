@@ -22,7 +22,7 @@ import java.sql.SQLException;
 public class LogInController {
     private String SelectStatement = "select* from users where Username = ? and Password = ?";
     private String sqlUser = "root";
-    private String sqlPass = "root";
+    private String sqlPass ;
     private String url = "jdbc:mysql://localhost:3306/desktopappdb";
     private UserGetterNSetter User;
 

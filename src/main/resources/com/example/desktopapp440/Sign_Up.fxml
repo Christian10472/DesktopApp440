@@ -6,7 +6,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="661.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.desktopapp440.SIgnUpController">
    <children>
-      <Button fx:id="SignUp" disable="true" layoutX="273.0" layoutY="346.0" mnemonicParsing="false" onAction="#onSignUpClick" text="Sign me up!" />
+      <Button fx:id="SignUp" disable="true" layoutX="291.0" layoutY="346.0" mnemonicParsing="false" onAction="#onSignUpClick" text="Sign me up!" />
       <Label layoutX="15.0" layoutY="179.0" prefHeight="19.0" prefWidth="123.0" text="Email Address">
          <font>
             <Font size="18.0" />
@@ -36,6 +36,7 @@
       <Label fx:id="UsernameText" layoutX="273.0" layoutY="148.0" prefHeight="18.0" prefWidth="175.0" textFill="#d11515" />
       <Label fx:id="EmailText" layoutX="273.0" layoutY="210.0" prefHeight="18.0" prefWidth="192.0" textFill="#d11515" />
       <TextField fx:id="PasswordConfirmUser" layoutX="15.0" layoutY="294.0" prefHeight="26.0" prefWidth="250.0" promptText="Confirm password" />
-      <Label fx:id="PasswordText" layoutX="273.0" layoutY="272.0" prefHeight="18.0" prefWidth="192.0" textFill="#d11515" />
+      <Label fx:id="PasswordText" layoutX="273.0" layoutY="272.0" prefHeight="18.0" prefWidth="230.0" textFill="#d11515" />
+      <Button fx:id="LogIn" layoutX="545.0" layoutY="25.0" mnemonicParsing="false" onAction="#gotoLogIn" text="Return to Log In" />
    </children>
 </AnchorPane>
