@@ -11,10 +11,10 @@
             <Font size="47.0" />
          </font>
       </Label>
-      <Label layoutX="100.0" layoutY="135.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
-      <Label layoutX="100.0" layoutY="183.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
-      <Label layoutX="103.0" layoutY="229.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
-      <Label layoutX="103.0" layoutY="265.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
-      <Label layoutX="103.0" layoutY="310.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
+      <Label fx:id="UsernameLabel" layoutX="100.0" layoutY="135.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
+      <Label fx:id="PasswordLabel" layoutX="100.0" layoutY="183.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
+      <Label fx:id="FirstNameLabel" layoutX="103.0" layoutY="229.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
+      <Label fx:id="LastNameLabel" layoutX="103.0" layoutY="265.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
+      <Label fx:id="EmailLabel" layoutX="103.0" layoutY="310.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
    </children>
 </AnchorPane>
