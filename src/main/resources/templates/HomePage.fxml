@@ -4,17 +4,19 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.desktopapp440.HomePageController">
+<?import javafx.scene.control.Button?>
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.desktopapp440.controllers.HomePageController">
    <children>
       <Label layoutX="117.0" layoutY="53.0" prefHeight="52.0" prefWidth="267.0" text="Welcome">
          <font>
             <Font size="47.0" />
          </font>
       </Label>
-      <Label fx:id="UsernameLabel" layoutX="100.0" layoutY="135.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
+      <Label fx:id="UsernameLabel" layoutX="100.0" layoutY="138.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
       <Label fx:id="PasswordLabel" layoutX="100.0" layoutY="183.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
-      <Label fx:id="FirstNameLabel" layoutX="103.0" layoutY="229.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
+      <Label fx:id="FirstNameLabel" layoutX="103.0" layoutY="220.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
       <Label fx:id="LastNameLabel" layoutX="103.0" layoutY="265.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
       <Label fx:id="EmailLabel" layoutX="103.0" layoutY="310.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
+      <Button fx:id="logOutButton" layoutX="103.0" layoutY="355.0" mnemonicParsing="false" onAction="#onLogOutButtonClick" text="Log out" />
    </children>
 </AnchorPane>

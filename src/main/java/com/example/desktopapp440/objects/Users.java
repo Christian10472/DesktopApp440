@@ -1,6 +1,6 @@
-package com.example.desktopapp440;
+package com.example.desktopapp440.objects;
 
-public class UserGetterNSetter {
+public class Users {
 
 
   private String Username,Password,FirstName,LastName,Email;
