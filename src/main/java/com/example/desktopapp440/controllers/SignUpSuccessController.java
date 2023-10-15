@@ -1,5 +1,6 @@
 package com.example.desktopapp440.controllers;
 
+import com.example.desktopapp440.database.UsersDatabase;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,27 +12,28 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Logger;
 
 public class SignUpSuccessController {
+
+    /**
+     * Log variable
+     */
+    private static final Logger log;
+
+    /**
+     * Logger for debugging
+     */
+    static {
+        System.setProperty("java.util.logging.SimpleFormatter.format", "[%4$-7s] %5$s %n");
+        log = Logger.getLogger(SignUpSuccessController.class.getName());
+    }
 
     @FXML
     private Button logInButton;
 
     @FXML
     protected void onLogInButtonClick(ActionEvent event) {
-        try {
-            URL logInUrl = getClass().getResource("/templates/LogIn.fxml");
-            if (logInUrl == null) {
-                throw new NullPointerException("Missing resources on: LogIn.fxml");
-            }
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(FXMLLoader.load(logInUrl)));
-            stage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(
-                    String.format(
-                            "Error loading LogIn.fxml: %s",
-                            e.getMessage()));
-        }
+        MainController.returnToLoginPage(event, getClass());
     }
 }

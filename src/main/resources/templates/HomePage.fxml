@@ -12,11 +12,11 @@
             <Font size="47.0" />
          </font>
       </Label>
-      <Label fx:id="UsernameLabel" layoutX="100.0" layoutY="138.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
-      <Label fx:id="PasswordLabel" layoutX="100.0" layoutY="183.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
-      <Label fx:id="FirstNameLabel" layoutX="103.0" layoutY="220.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
-      <Label fx:id="LastNameLabel" layoutX="103.0" layoutY="265.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
-      <Label fx:id="EmailLabel" layoutX="103.0" layoutY="310.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
+      <Label fx:id="usernameLabel" layoutX="100.0" layoutY="138.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
+      <Label fx:id="passwordLabel" layoutX="100.0" layoutY="183.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
+      <Label fx:id="firstNameLabel" layoutX="103.0" layoutY="220.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
+      <Label fx:id="lastNameLabel" layoutX="103.0" layoutY="265.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
+      <Label fx:id="emailLabel" layoutX="103.0" layoutY="310.0" prefHeight="36.0" prefWidth="151.0" text="Label" />
       <Button fx:id="logOutButton" layoutX="103.0" layoutY="355.0" mnemonicParsing="false" onAction="#onLogOutButtonClick" text="Log out" />
    </children>
 </AnchorPane>

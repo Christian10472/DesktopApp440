@@ -16,8 +16,21 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.util.logging.Logger;
 
 public class SignUpController {
+    /**
+     * Log variable
+     */
+    private static final Logger log;
+
+    /**
+     * Logger for debugging
+     */
+    static {
+        System.setProperty("java.util.logging.SimpleFormatter.format", "[%4$-7s] %5$s %n");
+        log = Logger.getLogger(SignUpController.class.getName());
+    }
 
     private boolean verified;
     private Stage stage;
@@ -37,10 +50,8 @@ public class SignUpController {
     @FXML
     private CheckBox termsCheckBox;
     @FXML
-    private Button signUpButton;
-    @FXML
-    private Button logInButton;
-
+    private Button signUpButton,
+            logInButton;
     @FXML
     protected void onTermsCheckBoxClick() {
         if (termsCheckBox.isSelected()) {
@@ -113,8 +124,8 @@ public class SignUpController {
             Connection dBConnection =
                     new UsersDatabase().getDatabaseConnection();
 
-            String SQL = "SELECT * FROM Users WHERE Username = ?;";
-            PreparedStatement verifyUser = dBConnection.prepareStatement(SQL);
+            final String checkUsername = "SELECT * FROM Users WHERE Username = ?;";
+            PreparedStatement verifyUser = dBConnection.prepareStatement(checkUsername);
             verifyUser.setString(1, usernameField.getText());
             ResultSet usersResultSet = verifyUser.executeQuery();
 
@@ -123,18 +134,17 @@ public class SignUpController {
                 verified = false;
             }
 
-            SQL = "SELECT * FROM Users WHERE Email = ?;";
-            verifyUser = dBConnection.prepareStatement(SQL);
+            final String checkEmail = "SELECT * FROM Users WHERE Email = ?;";
+            verifyUser = dBConnection.prepareStatement(checkEmail);
             verifyUser.setString(1, emailField.getText());
             usersResultSet = verifyUser.executeQuery();
             if (usersResultSet.next()) {
                 emailText.setText("*Email is already in use");
                 verified = false;
             }
-        } catch (Exception e) {
-            System.out.println("Error connecting to database");
-            System.out.println(e.getMessage());
-            verified = false;
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    String.format("Error connecting to database: %s",e.getMessage()));
         }
     }
 

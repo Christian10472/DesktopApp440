@@ -12,8 +12,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -22,17 +20,27 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 public class LogInController {
-    private String SelectStatement =
-            "select * from users where Username = ? and Password = ?";
+
+    /**
+     * Log variable
+     */
+    private static final Logger log;
+
+    /**
+     * Logger for debugging
+     */
+    static {
+        System.setProperty("java.util.logging.SimpleFormatter.format", "[%4$-7s] %5$s %n");
+        log = Logger.getLogger(LogInController.class.getName());
+    }
+
     private Users users;
-
-
     @FXML
-    public Button logInButton;
-    @FXML
-    public  Button signUpButton;
+    public Button logInButton,
+            signUpButton;
     @FXML
     public TextField userNameField;
     @FXML
@@ -86,22 +94,23 @@ public class LogInController {
     }
 
     private boolean validateInput() {
-        Connection dBConnection = null;
+        Connection dBConnection;
         try {
             dBConnection = new UsersDatabase().getDatabaseConnection();
 
             ResultSet resultSet;
-            PreparedStatement verifyLogin = dBConnection.prepareStatement(SelectStatement) ;
+            final String verifyUserCredentials = "select * from users where Username = ? and Password = ?";
+            PreparedStatement verifyLogin = dBConnection.prepareStatement(verifyUserCredentials) ;
 
-            String UsernameInput = userNameField.getText();
-            String PasswordInput = passwordField.getText();
+            String usernameInput = userNameField.getText();
+            String passwordInput = passwordField.getText();
 
-            verifyLogin.setString(1, UsernameInput);
-            verifyLogin.setString(2, PasswordInput);
+            verifyLogin.setString(1, usernameInput);
+            verifyLogin.setString(2, passwordInput);
             resultSet = verifyLogin.executeQuery();
 
             if (resultSet.next()) {
-                if( (UsernameInput.equals(resultSet.getString("Username"))) && PasswordInput.equals(resultSet.getString("Password"))) {
+                if( (usernameInput.equals(resultSet.getString("Username"))) && passwordInput.equals(resultSet.getString("Password"))) {
 
                     users = new Users();
                     users.setUsername(resultSet.getString(("Username")));
