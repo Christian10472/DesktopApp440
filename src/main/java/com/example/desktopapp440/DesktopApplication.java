@@ -7,16 +7,17 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class HelloApplication extends Application {
+public class DesktopApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("Log_in.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(DesktopApplication.class.getResource("/templates/LogIn.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 600, 400);
-        stage.setTitle("Hello!");
+        stage.setTitle("Desktop Application");
         stage.setScene(scene);
         stage.show();
     }
-//
+
+    //
     public static void main(String[] args) {
         launch();
     }
