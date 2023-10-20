@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.desktopapp440.ItemViewController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.desktopapp440.controllers.ItemViewController">
    <children>
       <Button layoutX="449.0" layoutY="329.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="61.0" text="Back" />
       <Label layoutX="125.0" layoutY="22.0" prefHeight="39.0" prefWidth="324.0" text="Item Name" textAlignment="CENTER">
