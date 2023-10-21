@@ -55,7 +55,7 @@ public class LogInController {
             if (validateInput()) {
                 URL homePageUrl = getClass().getResource("/templates/HomePage.fxml");
                 if (homePageUrl == null) {
-                    throw new NullPointerException("Missing resources on: HomePage.fxmll");
+                    throw new NullPointerException("Missing resources on: HomePage.fxml");
                 }
                 FXMLLoader loader = new FXMLLoader(homePageUrl);
                 Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
