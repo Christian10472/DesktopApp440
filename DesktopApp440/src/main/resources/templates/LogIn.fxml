@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="443.0" prefWidth="642.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.csun.desktopapp440.controllers.LogInController">
+   <children>
+      <Button fx:id="logInButton" layoutX="214.0" layoutY="286.0" mnemonicParsing="false" onAction="#onLogInButtonClick" prefHeight="27.0" prefWidth="63.0" text="Log In" />
+      <Button fx:id="signUpButton" layoutX="364.0" layoutY="286.0" mnemonicParsing="false" onAction="#onSignUpButtonClick" prefHeight="27.0" prefWidth="63.0" text="Sign Up" />
+      <TextField fx:id="userNameField" layoutX="246.0" layoutY="144.0" promptText="Username" />
+      <PasswordField fx:id="passwordField" layoutX="246.0" layoutY="220.0" promptText="Password"/>
+      <Label graphicTextGap="0.0" layoutX="246.0" layoutY="99.0" prefHeight="38.0" prefWidth="88.0" text="Username">
+         <font>
+            <Font name="Microsoft Himalaya" size="29.0" />
+         </font>
+      </Label>
+      <Label graphicTextGap="0.0" layoutX="246.0" layoutY="175.0" prefHeight="38.0" prefWidth="88.0" text="Password">
+         <font>
+            <Font name="Microsoft Himalaya" size="29.0" />
+         </font>
+      </Label>
+      <Label fx:id="errorLabel" graphicTextGap="0.0" layoutX="177.0" layoutY="247.0" prefHeight="38.0" prefWidth="304.0" textFill="RED">
+         <font>
+            <Font name="Microsoft Himalaya" size="29.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

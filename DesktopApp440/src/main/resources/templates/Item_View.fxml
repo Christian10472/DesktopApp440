@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.csun.desktopapp440.controllers.ItemViewController">
+   <children>
+      <Button layoutX="449.0" layoutY="329.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="61.0" text="Back" />
+      <Label layoutX="125.0" layoutY="22.0" prefHeight="39.0" prefWidth="324.0" text="Item Name" textAlignment="CENTER">
+         <font>
+            <Font size="27.0" />
+         </font></Label>
+      <Label layoutX="81.0" layoutY="89.0" prefHeight="32.0" prefWidth="220.0" text="Price:">
+         <font>
+            <Font size="22.0" />
+         </font>
+      </Label>
+      <Label layoutX="39.0" layoutY="140.0" prefHeight="32.0" prefWidth="347.0" text="Catagory: ">
+         <font>
+            <Font size="22.0" />
+         </font>
+      </Label>
+      <Label layoutX="18.0" layoutY="184.0" prefHeight="32.0" prefWidth="347.0" text="Description:">
+         <font>
+            <Font size="22.0" />
+         </font>
+      </Label>
+      <Label layoutX="39.0" layoutY="232.0" prefHeight="22.0" prefWidth="83.0" text="Reviews">
+         <font>
+            <Font size="22.0" />
+         </font>
+      </Label>
+      <Button layoutX="41.0" layoutY="347.0" mnemonicParsing="false" text="Add Review" />
+   </children>
+</AnchorPane>
