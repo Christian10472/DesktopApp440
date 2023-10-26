@@ -3,6 +3,9 @@ package com.example.desktopapp440.controllers;
 import com.example.desktopapp440.database.UsersDatabase;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
@@ -45,14 +48,62 @@ public class HomePageController {
     private Users User;
 
     public void initialiseHomepage(Users user) {
-        usernameLabel.setText(user.getUsername());
-        passwordLabel.setText(user.getPassword());
-        firstNameLabel.setText(user.getFirstName());
-        lastNameLabel.setText(user.getLastName());
-        emailLabel.setText(user.getEmail());
+       User = user;
     }
 
     public void onLogOutButtonClick(ActionEvent event) {
         MainController.returnToLoginPage(event, getClass());
+    }
+
+    public void onAddItemButtonClick(ActionEvent event){
+        try{
+            URL addITemURL = getClass().getResource("/templates/Add_Item.fxml");
+            if (addITemURL == null){
+                throw new NullPointerException("Missing resources on: Add_Item.fxml");
+            }
+            FXMLLoader loader = new FXMLLoader(addITemURL);
+            Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(loader.load()));
+            AddItemController controller = loader.getController();
+            controller.initializeAddItemController(User);
+            stage.show();
+        } catch (IOException e) {
+        throw new RuntimeException(String.format("Error loading HomePage.fxml: %s", e.getMessage()));
+        }
+    }
+
+
+    public void onSearchClick(){
+        getUserSearch();
+        if(ableToSearch == true){
+            searchUserRequestedItem();
+        }
+    }
+
+
+    //Getting whether the user inputted a prompt into the search field
+    public void getUserSearch() {
+        if (searchField.getText().isEmpty()){
+            ableToSearch = true;
+        }
+    }
+
+    //Searching the database for the Users requested item;
+    public void searchUserRequestedItem(){
+        String[] itemID = new String[]{};
+        String[] itemTitle = new String[]{};
+        String[] itemDescription = new String[]{};
+        String[] itemCategory = new String[]{};
+        String[] itemPrice = new String[]{};
+
+        try{
+            Connection dBConnection = new UsersDatabase().getDatabaseConnection();
+            final String findItemSearchCategory = "SELECT * FROM Users WHERE Category = ?;";
+            PreparedStatement newUserValues = dBConnection.prepareStatement(findItemSearchCategory);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    String.format("Error connecting to database: %s",e.getMessage()));
+        }
     }
 }
