@@ -1,26 +1,24 @@
 package com.example.desktopapp440.controllers;
 
 import com.example.desktopapp440.database.UsersDatabase;
+import com.example.desktopapp440.objects.Users;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ResourceBundle;
 import java.util.logging.Logger;
-
-import com.example.desktopapp440.objects.Users;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
 
 public class HomePageController {
@@ -39,12 +37,9 @@ public class HomePageController {
     }
 
     @FXML
-    private Button logOutButton;
-    @FXML
-    private Button addItemButton;
+    private ListView<String> userSearchListView;
     @FXML
     private TextField searchField;
-    private boolean ableToSearch;
     private Users User;
 
     public void initialiseHomepage(Users user) {
@@ -74,23 +69,24 @@ public class HomePageController {
 
 
     public void onSearchClick(){
-        getUserSearch();
-        if(ableToSearch == true){
+        if(getUserSearch()){
             searchUserRequestedItem();
         }
     }
 
 
     //Getting whether the user inputted a prompt into the search field
-    public void getUserSearch() {
+    public boolean getUserSearch() {
         if (searchField.getText().isEmpty()){
-            ableToSearch = true;
+            return false;
+        }else{
+            return true;
         }
     }
 
     //Searching the database for the Users requested item;
     public void searchUserRequestedItem(){
-        String[] itemID = new String[]{};
+        int[] itemID = new int[]{};
         String[] itemTitle = new String[]{};
         String[] itemDescription = new String[]{};
         String[] itemCategory = new String[]{};
@@ -98,13 +94,27 @@ public class HomePageController {
 
         try{
             Connection dBConnection = new UsersDatabase().getDatabaseConnection();
-            String findItemSearchCategory = "SELECT * FROM Items WHERE Category = ?;";
-            PreparedStatement newUserSearch = dBConnection.prepareStatement(findItemSearchCategory);
-            newUserSearch.setString(1, searchField.getText());
+            String query = "SELECT * FROM Items WHERE Category Like ?";
+            PreparedStatement ps = dBConnection.prepareStatement(query);
+            String userSearch = "%" + searchField.getText() + "%";
+            ps.setString(1, userSearch);
+            ResultSet rs = ps.executeQuery();
+
+            int i = 0;
+            while (rs.next()){
+                userSearchListView.getItems().addAll(rs.getString("Title"));
+
+//                itemID[i] = rs.getInt("ItemId");
+//                itemTitle[i] = rs.getString("Title");
+//                itemCategory[i] = rs.getString("Category");
+//                itemDescription[i] = rs.getString("Description");
+//                itemPrice[i] = rs.getDouble("Price");
+            }
+
 
         } catch (SQLException e) {
             throw new RuntimeException(
-                    String.format("Error connecting to database: %s",e.getMessage()));
+                    String.format("Error getting search query from database: %s",e.getMessage()));
         }
     }
 }
