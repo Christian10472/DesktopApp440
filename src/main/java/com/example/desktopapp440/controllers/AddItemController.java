@@ -86,7 +86,7 @@ public class AddItemController {
             valid=false;
         }
         if (ItemCatagoryTextField.getText().isEmpty()) {
-            CatagoryLabel.setText("Please enter a price");
+            CatagoryLabel.setText("Please enter a Category");
             valid = false;
         }
         if(DescriptionTextArea.getText().isEmpty()) {
@@ -99,7 +99,7 @@ public class AddItemController {
             PriceLabel.setText("Please enter a valid price");
             valid = false;
         }
-
+        System.out.println("got to end of validation");
         return valid;
     }
 
@@ -141,7 +141,7 @@ public class AddItemController {
      */
     public void addItem() {
         Connection dbConnection = new UsersDatabase().getDatabaseConnection();
-        final String query = "INSERT INTO items (username, title, category, description, price, date) VALUES (?, ?, ?, ?, ?, ?)";
+        final String query = "INSERT INTO items (Username,Title,Catagory,Description,Price,Date_Posted) VALUES (?, ?, ?, ?, ?, ?)";
         try {
             PreparedStatement preparedStatement = dbConnection.prepareStatement(query);
             preparedStatement.setString(1, user.getUsername());
@@ -151,8 +151,11 @@ public class AddItemController {
             preparedStatement.setDouble(5, price);
             preparedStatement.setDate(6, java.sql.Date.valueOf(LocalDate.now()));
             preparedStatement.executeUpdate();
+            System.out.println("Item added");
+            dbConnection.close();
         } catch (SQLException e) {
             String.format("SQL Error: %s", e.getMessage());
         }
+
     }
 }
