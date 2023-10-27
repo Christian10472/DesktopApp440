@@ -94,12 +94,13 @@ public class HomePageController {
         String[] itemTitle = new String[]{};
         String[] itemDescription = new String[]{};
         String[] itemCategory = new String[]{};
-        String[] itemPrice = new String[]{};
+        Double[] itemPrice = new Double[]{};
 
         try{
             Connection dBConnection = new UsersDatabase().getDatabaseConnection();
-            final String findItemSearchCategory = "SELECT * FROM Users WHERE Category = ?;";
-            PreparedStatement newUserValues = dBConnection.prepareStatement(findItemSearchCategory);
+            String findItemSearchCategory = "SELECT * FROM Items WHERE Category = ?;";
+            PreparedStatement newUserSearch = dBConnection.prepareStatement(findItemSearchCategory);
+            newUserSearch.setString(1, searchField.getText());
 
         } catch (SQLException e) {
             throw new RuntimeException(
