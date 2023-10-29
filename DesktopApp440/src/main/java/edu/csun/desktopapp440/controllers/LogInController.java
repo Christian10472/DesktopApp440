@@ -51,10 +51,9 @@ public class LogInController {
     @FXML
     public void userLogInEvent(Event event) {
         try {
-            if (validateInput()) {
-                URL homePageUrl = getClass().getResource("/templates/HomePage.fxml");
-                if (homePageUrl == null) {
-                    throw new NullPointerException("Missing resources on: HomePage.fxmll");
+            if(event.getClass() == KeyEvent.class) {
+                if(((KeyEvent) event).getCode() != KeyCode.ENTER) {
+                    return;
                 }
             }
             if (!validateInput()) {
