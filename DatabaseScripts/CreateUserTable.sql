@@ -12,4 +12,3 @@ CONSTRAINT Uk_Users_Email UNIQUE KEY(Email)
 -- ALTER TABLE Users ADD CONSTRAINT Uk_Users_Email UNIQUE KEY(Email);
 
 -- DROP TABLE Users
-
