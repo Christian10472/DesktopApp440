@@ -63,7 +63,7 @@ public class HomePageController {
             controller.initializeAddItemController(User);
             stage.show();
         } catch (IOException e) {
-        throw new RuntimeException(String.format("Error loading HomePage.fxml: %s", e.getMessage()));
+            throw new RuntimeException(String.format("Error loading HomePage.fxml: %s", e.getMessage()));
         }
     }
 
