@@ -3,6 +3,7 @@ package edu.csun.desktopapp440.controllers;
 import edu.csun.desktopapp440.database.UsersDatabase;
 import edu.csun.desktopapp440.objects.Users;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -12,6 +13,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -47,7 +50,7 @@ public class LogInController {
     public PasswordField passwordField;
     @FXML
     public Label errorLabel;
-    
+
     @FXML
     public void userLogInEvent(Event event) {
         try {
@@ -72,28 +75,12 @@ public class LogInController {
             controller.initialiseHomepage(users);
             stage.show();
 
-    @FXML
-    public void onLogInButtonClick(ActionEvent event) {
-        try {
-            if (validateInput()) {
-                URL homePageUrl = getClass().getResource("/templates/HomePage.fxml");
-                if (homePageUrl == null) {
-                    throw new NullPointerException("Missing resources on: HomePage.fxml");
-                }
-                FXMLLoader loader = new FXMLLoader(homePageUrl);
-                Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-                stage.setScene(new Scene(loader.load()));
-                HomePageController controller = loader.getController();
-                controller.initialiseHomepage(users);
-                stage.show();
-            }
         } catch (IOException e) {
             throw new RuntimeException(
                     String.format(
                             "Error loading HomePage.fxml: %s",
                             e.getMessage()));
         }
-        errorLabel.setText("*Incorrect Username or Password*");
     }
 
     @FXML

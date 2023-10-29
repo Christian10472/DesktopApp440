@@ -36,7 +36,7 @@
       <Label fx:id="usernameLabel" layoutX="273.0" layoutY="148.0" prefHeight="18.0" prefWidth="175.0" textFill="#d11515" />
       <Label fx:id="emailLabel" layoutX="273.0" layoutY="210.0" prefHeight="18.0" prefWidth="192.0" textFill="#d11515" />
       <Label fx:id="passwordLabel" layoutX="273.0" layoutY="272.0" prefHeight="18.0" prefWidth="230.0" textFill="#d11515" />
-      <Button fx:id="logInButton" layoutX="545.0" layoutY="25.0" mnemonicParsing="false" onAction="#onLogInPageButtonClick" text="Return to Log In" />
       <Button fx:id="signUpButton" disable="true" layoutX="291.0" layoutY="346.0" mnemonicParsing="false" onAction="#onSignUpButtonClick" text="Sign me up!" />
+      <Button fx:id="logInButton" layoutX="545.0" layoutY="25.0" mnemonicParsing="false" onAction="#onLogInPageButtonClick" text="Return to Log In" />
    </children>
 </AnchorPane>
