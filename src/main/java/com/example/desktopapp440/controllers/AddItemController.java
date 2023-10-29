@@ -141,7 +141,7 @@ public class AddItemController {
      */
     public void addItem() {
         Connection dbConnection = new UsersDatabase().getDatabaseConnection();
-        final String query = "INSERT INTO items (Username,Title,Catagory,Description,Price,Date_Posted) VALUES (?, ?, ?, ?, ?, ?)";
+        final String query = "INSERT INTO items (Username,Title,Category,Description,Price,Date_Posted) VALUES (?, ?, ?, ?, ?, ?)";
         try {
             PreparedStatement preparedStatement = dbConnection.prepareStatement(query);
             preparedStatement.setString(1, user.getUsername());
