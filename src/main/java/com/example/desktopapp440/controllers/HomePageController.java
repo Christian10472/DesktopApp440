@@ -2,9 +2,12 @@ package com.example.desktopapp440.controllers;
 
 import com.example.desktopapp440.database.UsersDatabase;
 import com.example.desktopapp440.objects.Users;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -18,10 +21,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 
-public class HomePageController {
+public class HomePageController implements Initializable {
 
     /*
      * Log variable
@@ -102,18 +106,46 @@ public class HomePageController {
                 String id = rs.getString("ItemId");
                 String title = rs.getString("Title");
                 String category = rs.getString("Category");
-                String description = rs.getString("Description");
                 Double price = rs.getDouble("Price");
 
                 String newRow = String.format("%-5s%-20s%-25s%-8s", id, title, category, price);
-                System.out.println(newRow);
                 userSearchListView.getItems().addAll(newRow);
             }
-
-
         } catch (SQLException e) {
             throw new RuntimeException(
                     String.format("Error getting search query from database: %s",e.getMessage()));
         }
     }
+
+    //Override for when user clicks on an Item within the searchView
+    @Override
+    public void initialize(URL arg0, ResourceBundle arg1) {
+        userSearchListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                //Get the Substring Item ID from the searchView
+                String selectedItem = userSearchListView.getSelectionModel().getSelectedItem();
+                String[] selectedItemSplit = selectedItem.split(" ");
+                Integer selectedID = Integer.parseInt(selectedItemSplit[0]);
+
+                //Try to load the Item_View FXML
+                try {
+                    URL viewItemURL = getClass().getResource("/templates/Item_View.fxml");
+                    if (viewItemURL == null) {
+                        throw new NullPointerException("Missing resources on: Item_View.fxml");
+                    }
+                    FXMLLoader loader = new FXMLLoader(viewItemURL);
+                    Stage stage = (Stage) userSearchListView.getScene().getWindow();
+                    stage.setScene(new Scene(loader.load()));
+                    ItemViewController controller = loader.getController();
+                    //passing User who is logged in + the selected Items ID
+                    controller.initialiseItemViewController(User, selectedID);
+                    stage.show();
+                } catch (IOException e) {
+                    throw new RuntimeException(String.format("Error loading Item View.fxml: %s", e.getMessage()));
+                }
+            }
+        });
+    }
+
 }
