@@ -86,11 +86,8 @@ public class HomePageController {
 
     //Searching the database for the Users requested item;
     public void searchUserRequestedItem(){
-        int[] itemID = new int[]{};
-        String[] itemTitle = new String[]{};
-        String[] itemDescription = new String[]{};
-        String[] itemCategory = new String[]{};
-        Double[] itemPrice = new Double[]{};
+        //Clear the listview for new search
+        userSearchListView.getItems().clear();
 
         try{
             Connection dBConnection = new UsersDatabase().getDatabaseConnection();
@@ -100,15 +97,17 @@ public class HomePageController {
             ps.setString(1, userSearch);
             ResultSet rs = ps.executeQuery();
 
-            int i = 0;
+            //Get all items and display them on Search Window
             while (rs.next()){
-                userSearchListView.getItems().addAll(rs.getString("Title"));
+                String id = rs.getString("ItemId");
+                String title = rs.getString("Title");
+                String category = rs.getString("Category");
+                String description = rs.getString("Description");
+                Double price = rs.getDouble("Price");
 
-//                itemID[i] = rs.getInt("ItemId");
-//                itemTitle[i] = rs.getString("Title");
-//                itemCategory[i] = rs.getString("Category");
-//                itemDescription[i] = rs.getString("Description");
-//                itemPrice[i] = rs.getDouble("Price");
+                String newRow = String.format("%-5s%-20s%-25s%-8s", id, title, category, price);
+                System.out.println(newRow);
+                userSearchListView.getItems().addAll(newRow);
             }
 
 
