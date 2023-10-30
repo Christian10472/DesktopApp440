@@ -1,5 +1,6 @@
 package com.example.desktopapp440.controllers;
 
+import com.example.desktopapp440.database.UsersDatabase;
 import com.example.desktopapp440.objects.Users;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -36,7 +37,7 @@ public class AddReviewController implements Initializable {
     private int itemId;
     private String[] condition = {"excellent", "good", "fair", "poor"};
 
-    public void initialiseAddReviewController(Users users , int itemId) {
+    public void initialiseAddReviewController(Users users , int ItemId) {
         user = users;
         ItemId = itemId;
     }
