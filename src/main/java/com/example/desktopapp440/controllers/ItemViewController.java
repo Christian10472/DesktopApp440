@@ -13,6 +13,7 @@ import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -88,9 +89,13 @@ public class ItemViewController {
         }
     }
 
-    public void onBackClick(ActionEvent event){
+    public void onBackClick(ActionEvent event) throws IOException {
         try{
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/HomePage.fxml"));
+            URL addITemURL = getClass().getResource("/templates/HomePage.fxml");
+            if (addITemURL == null){
+                throw new NullPointerException("Missing resources on: HomePage.fxml");
+            }
+            FXMLLoader loader = new FXMLLoader(addITemURL);
             Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(loader.load()));
             HomePageController controller = loader.getController();
@@ -103,14 +108,18 @@ public class ItemViewController {
 
     public void onAddReviewClick(ActionEvent event){
         try{
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AddReview.fxml"));
+            URL addITemURL = getClass().getResource("/templates/Add_Review.fxml");
+            if (addITemURL == null){
+                throw new NullPointerException("Missing resources on: Add_Review.fxml");
+            }
+            FXMLLoader loader = new FXMLLoader(addITemURL);
             Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(loader.load()));
             AddReviewController controller = loader.getController();
             controller.initialiseAddReviewController(user,ItemId);
             stage.show();
         } catch (IOException e) {
-            throw new RuntimeException(String.format("Error loading AddReview.fxml: %s", e.getMessage()));
+            throw new RuntimeException(String.format("Error loading HomePage.fxml: %s", e.getMessage()));
         }
     }
 }

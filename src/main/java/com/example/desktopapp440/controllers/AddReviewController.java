@@ -4,12 +4,17 @@ import com.example.desktopapp440.database.UsersDatabase;
 import com.example.desktopapp440.objects.Users;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,9 +42,9 @@ public class AddReviewController implements Initializable {
     private int itemId;
     private String[] condition = {"excellent", "good", "fair", "poor"};
 
-    public void initialiseAddReviewController(Users users , int ItemId) {
+    public void initialiseAddReviewController(Users users , int Itemid) {
         user = users;
-        ItemId = itemId;
+        itemId = Itemid;
     }
 
     //Populating checklist with the condition values
@@ -48,9 +53,10 @@ public class AddReviewController implements Initializable {
         conditionChoiceBox.getItems().addAll(condition);
     }
 
-    public void onAddReviewButtonClick(){
+    public void onAddReviewButtonClick(ActionEvent event) throws IOException {
         if(checkIfThreeOrMoreReviews() && CheckIfSellerIsReviewer()){
            addReview();
+           goback(event);
         }
     }
 
@@ -108,7 +114,7 @@ public class AddReviewController implements Initializable {
                     "Reviews(ItemId,Reviewer,Quality,Review,Date_Posted) " +
                     "VALUES(?, ?, ?, ?, ?)";
             PreparedStatement ps = dBConnection.prepareStatement(sql);
-            ps.setInt(2, itemId);
+            ps.setInt(1, itemId);
             ps.setString(2, user.getUsername());
             ps.setString(3, conditionChoiceBox.getValue());
             ps.setString(4,  reviewTextArea.getText());
@@ -125,5 +131,24 @@ public class AddReviewController implements Initializable {
         }
     }
 
+    public void onBackButtonClick(ActionEvent actionEvent) throws IOException {
+        goback(actionEvent);
+    }
 
+    public void goback(ActionEvent event) throws IOException {
+        try{
+            URL addITemURL = getClass().getResource("/templates/Item_View.fxml");
+            if (addITemURL == null){
+                throw new NullPointerException("Missing resources on: Item_View.fxml");
+            }
+            FXMLLoader loader = new FXMLLoader(addITemURL);
+            Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(loader.load()));
+            ItemViewController controller = loader.getController();
+            controller.initialiseItemViewController(user,itemId);
+            stage.show();
+        } catch (IOException e) {
+            throw new RuntimeException(String.format("Error loading HomePage.fxml: %s", e.getMessage()));
+        }
+    }
 }

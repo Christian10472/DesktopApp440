@@ -18,7 +18,7 @@
             <Font size="24.0" />
          </font>
       </Label>
-      <Button fx:id="backButton" layoutX="120.0" layoutY="347.0" mnemonicParsing="false" text="Back" />
+      <Button fx:id="backButton" layoutX="120.0" layoutY="347.0" mnemonicParsing="false" onAction="#onBackButtonClick" text="Back" />
       <Button fx:id="addReviewButton" layoutX="402.0" layoutY="347.0" mnemonicParsing="false" onAction="#onAddReviewButtonClick" text="Add Review" />
    </children>
 </AnchorPane>
