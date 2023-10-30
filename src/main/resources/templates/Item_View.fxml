@@ -36,18 +36,18 @@
          </font></Label>
       <Label fx:id="CategoryLabel" layoutX="142.0" layoutY="74.0" prefHeight="32.0" prefWidth="409.0" text="Label">
          <font>
-            <Font size="20.0" />
+            <Font size="15.0" />
          </font></Label>
-      <Label fx:id="DescriptionLabel" layoutX="142.0" layoutY="106.0" prefHeight="32.0" prefWidth="409.0" text="Label">
+      <Label fx:id="DescriptionLabel" layoutX="142.0" layoutY="106.0" prefHeight="32.0" prefWidth="455.0" text="Label">
          <font>
-            <Font size="20.0" />
+            <Font size="15.0" />
          </font></Label>
       <ScrollPane layoutX="64.0" layoutY="170.0" prefHeight="184.0" prefWidth="481.0">
          <content>
-            <ListView fx:id="ReviewListView" prefHeight="200.0" prefWidth="499.0" />
+            <ListView fx:id="ReviewListView" fixedCellSize="20.0" prefHeight="200.0" prefWidth="499.0" />
          </content>
       </ScrollPane>
-      <Button layoutX="60.0" layoutY="364.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="54.0" text="Back" />
-      <Button layoutX="452.0" layoutY="364.0" mnemonicParsing="false" text="Add Review" />
+      <Button fx:id="BackButton" layoutX="60.0" layoutY="364.0" mnemonicParsing="false" onAction="#onBackClick" prefHeight="25.0" prefWidth="54.0" text="Back" />
+      <Button layoutX="452.0" layoutY="364.0" mnemonicParsing="false" onAction="#onAddReviewClick" text="Add Review" />
    </children>
 </AnchorPane>
