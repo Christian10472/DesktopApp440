@@ -29,6 +29,9 @@ public class AddItemController {
     }
 
     @FXML
+    private Label TitleOfPageLabel;
+
+    @FXML
     private TextArea DescriptionTextArea;
 
     @FXML
@@ -71,7 +74,23 @@ public class AddItemController {
             description = DescriptionTextArea.getText();
             price = Double.parseDouble(ItemPriceTextField.getText());
             addItem();
+            clearInput();
         }
+    }
+
+    /**
+     * when the item is added the input is cleared and so are the
+     * labels if any errors were made
+     */
+    private void clearInput() {
+        ItemTitleTextFiled.clear();
+        ItemCatagoryTextField.clear();
+        DescriptionTextArea.clear();
+        ItemPriceTextField.clear();
+        TitleLabel.setText("");
+        CatagoryLabel.setText("");
+        PriceLabel.setText("");
+        DescriptionLabel.setText("");
     }
 
 
@@ -124,8 +143,10 @@ public class AddItemController {
             if (resultSet.next()) {
                 if (resultSet.getInt(1) >= 3) {
                     tooManyItems.setText("You have already added 3 items today");
+                    dbConnection.close();
                     return false;
                 }
+                dbConnection.close();
             }
         } catch (SQLException e) {
             String.format("SQL Error: %s", e.getMessage());
@@ -151,7 +172,7 @@ public class AddItemController {
             preparedStatement.setDouble(5, price);
             preparedStatement.setDate(6, java.sql.Date.valueOf(LocalDate.now()));
             preparedStatement.executeUpdate();
-            System.out.println("Item added");
+            TitleOfPageLabel.setText("Item Added");
             dbConnection.close();
         } catch (SQLException e) {
             String.format("SQL Error: %s", e.getMessage());
