@@ -1,6 +1,8 @@
 package com.example.desktopapp440.controllers;
 
 import com.example.desktopapp440.database.UsersDatabase;
+import com.example.desktopapp440.objects.Items;
+import com.example.desktopapp440.objects.Reviews;
 import com.example.desktopapp440.objects.Users;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,7 +10,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -21,30 +22,29 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class AddReviewController implements Initializable {
 
-    @FXML
-    private Button addReviewButton,
-            backButton;
 
     @FXML
     private ChoiceBox<String> conditionChoiceBox;
 
-    @FXML
-    private Label itemTitleLabel;
+
 
     @FXML
     private TextArea reviewTextArea;
 
     private Users user;
-    private int itemId;
-    private String[] condition = {"excellent", "good", "fair", "poor"};
+    private Items item;
+    private ArrayList<Reviews> reviews;
+    private final String[] condition = {"excellent", "good", "fair", "poor"};
 
-    public void initialiseAddReviewController(Users users , int Itemid) {
+    public void initialiseAddReviewController(Users users , Items item, ArrayList<Reviews> reviews) {
+        this.reviews = reviews;
         user = users;
-        itemId = Itemid;
+        this.item = item;
     }
 
     //Populating checklist with the condition values
@@ -54,32 +54,12 @@ public class AddReviewController implements Initializable {
     }
 
     public void onAddReviewButtonClick(ActionEvent event) throws IOException {
-        if(checkIfThreeOrMoreReviews() && CheckIfSellerIsReviewer()){
+        if(checkIfThreeOrMoreReviews()){
            addReview();
-           goback(event);
+           goBack(event);
         }
     }
 
-    private boolean CheckIfSellerIsReviewer() {
-        try{
-            Connection dbConnection = new UsersDatabase().getDatabaseConnection();
-            final String query = ("Select * from Items where ItemId = ?");
-            PreparedStatement preparedStatement = dbConnection.prepareStatement(query);
-            preparedStatement.setInt(1,itemId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if(resultSet.next()){
-                if (user.getUsername().equals(resultSet.getString("Username")));
-                //prompt for cant review cuz you made the post stop trying to bot your shit
-                return false;
-            }
-        }
-        catch (SQLException e)
-        {
-
-        }
-        return true;
-    }
 
     public boolean checkIfThreeOrMoreReviews(){
         LocalDate currentDate = LocalDate.now();
@@ -114,15 +94,17 @@ public class AddReviewController implements Initializable {
                     "Reviews(ItemId,Reviewer,Quality,Review,Date_Posted) " +
                     "VALUES(?, ?, ?, ?, ?)";
             PreparedStatement ps = dBConnection.prepareStatement(sql);
-            ps.setInt(1, itemId);
+            ps.setInt(1, item.getItemId());
             ps.setString(2, user.getUsername());
             ps.setString(3, conditionChoiceBox.getValue());
             ps.setString(4,  reviewTextArea.getText());
             ps.setDate(5, java.sql.Date.valueOf(LocalDate.now()));
             ps.executeUpdate();
 
-            dBConnection.close();
+            //Adds to Review Object
+            reviews.add(new Reviews(user.getUsername(),conditionChoiceBox.getValue(),reviewTextArea.getText(),java.sql.Date.valueOf(LocalDate.now())));
 
+            dBConnection.close();
         } catch (SQLException e) {
             throw new RuntimeException(
                     String.format(
@@ -132,10 +114,10 @@ public class AddReviewController implements Initializable {
     }
 
     public void onBackButtonClick(ActionEvent actionEvent) throws IOException {
-        goback(actionEvent);
+        goBack(actionEvent);
     }
 
-    public void goback(ActionEvent event) throws IOException {
+    public void goBack(ActionEvent event) throws IOException{
         try{
             URL addITemURL = getClass().getResource("/templates/Item_View.fxml");
             if (addITemURL == null){
@@ -145,7 +127,7 @@ public class AddReviewController implements Initializable {
             Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(loader.load()));
             ItemViewController controller = loader.getController();
-            controller.initialiseItemViewController(user,itemId);
+            controller.initialiseItemViewController(user,item,reviews);
             stage.show();
         } catch (IOException e) {
             throw new RuntimeException(String.format("Error loading HomePage.fxml: %s", e.getMessage()));

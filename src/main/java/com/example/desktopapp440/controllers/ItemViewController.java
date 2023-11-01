@@ -1,6 +1,8 @@
 package com.example.desktopapp440.controllers;
 
 import com.example.desktopapp440.database.UsersDatabase;
+import com.example.desktopapp440.objects.Items;
+import com.example.desktopapp440.objects.Reviews;
 import com.example.desktopapp440.objects.Users;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -19,45 +22,37 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Date;
+import java.util.ArrayList;
 
 public class ItemViewController {
 
     @FXML
-    private Label itemTitleLabel,CategoryLabel,DescriptionLabel,PriceLabel;
+    private Label itemTitleLabel,CategoryLabel,DescriptionLabel,PriceLabel,SameUserLabel;
 
     @FXML
-    private ListView<String> ReviewListView;
+    private TextArea ReviewTextArea;
 
     private Users user;
 
-    private String Category,Description,Title;
+    private String Category,Description,Title,username;
 
-    private int ItemId;
+    private Items items;
+    private ArrayList<Reviews> reviews;
 
     private double Price;
 
 
 
-    public void initialiseItemViewController(Users users ,int itemId) {
+    public void initialiseItemViewController(Users users , Items items, ArrayList<Reviews> reviews){
+        this.reviews = reviews;
         user = users;
-        ItemId = itemId;
+        this.items= items;
 
-        try{
-           Connection dbConnection = new UsersDatabase().getDatabaseConnection();
-            PreparedStatement preparedStatement = dbConnection.prepareStatement("SELECT * FROM Items WHERE ItemID = ?");
-            preparedStatement.setInt(1,ItemId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-
-            Title = resultSet.getString("Title");
-            Category = resultSet.getString("Category");
-            Description = resultSet.getString("Description");
-            Price = resultSet.getDouble("Price");
-
-        }
-        catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        username = items.getUsername();
+        Title = items.getTitle();
+        Category = items.getCategory();
+        Description = items.getDescription();
+        Price = items.getPrice();
 
         populateLabels();
         populateReviewList();
@@ -72,21 +67,22 @@ public class ItemViewController {
     }
 
     public void populateReviewList(){
-        try{
-            Connection dbConnection = new UsersDatabase().getDatabaseConnection();
-            PreparedStatement preparedStatement = dbConnection.prepareStatement("SELECT Review FROM Reviews WHERE ItemID = ?");
-            preparedStatement.setInt(1,ItemId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
+        if(reviews.isEmpty()){
+            ReviewTextArea.setText("No reviews yet");
+            return;
+        }
+        StringBuilder review = new StringBuilder();
+        ReviewTextArea.setWrapText(true);
+        ReviewTextArea.setEditable(false);
+        for (Reviews value : reviews) {
+            review.append("User: ").append(value.getReviewer()).append("\n")
+                    .append("Date Posted: ").append(value.getDatePosted()).append("\n")
+                    .append("Quality: ").append(value.getQuality()).append("\n")
+                    .append("Review:  ").append(value.getReview()).append("\n")
+                    .append("==================================").append("\n");
+        }
 
-            while(resultSet.next()){
-               String review = resultSet.getString("Review");
-                ReviewListView.getItems().addAll(review);
-            }
-        }
-        catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        ReviewTextArea.setText(review.toString());
     }
 
     public void onBackClick(ActionEvent event) throws IOException {
@@ -107,16 +103,20 @@ public class ItemViewController {
     }
 
     public void onAddReviewClick(ActionEvent event){
-        try{
+        if(user.getUsername().equals(username)){
+            SameUserLabel.setText("You cannot review your own item");
+        }
+        else
+            try {
             URL addITemURL = getClass().getResource("/templates/Add_Review.fxml");
-            if (addITemURL == null){
+            if (addITemURL == null) {
                 throw new NullPointerException("Missing resources on: Add_Review.fxml");
             }
             FXMLLoader loader = new FXMLLoader(addITemURL);
-            Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(loader.load()));
             AddReviewController controller = loader.getController();
-            controller.initialiseAddReviewController(user,ItemId);
+            controller.initialiseAddReviewController(user, items,reviews);
             stage.show();
         } catch (IOException e) {
             throw new RuntimeException(String.format("Error loading HomePage.fxml: %s", e.getMessage()));

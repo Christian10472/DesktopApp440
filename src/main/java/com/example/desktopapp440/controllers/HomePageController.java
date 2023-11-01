@@ -1,6 +1,8 @@
 package com.example.desktopapp440.controllers;
 
 import com.example.desktopapp440.database.UsersDatabase;
+import com.example.desktopapp440.objects.Items;
+import com.example.desktopapp440.objects.Reviews;
 import com.example.desktopapp440.objects.Users;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -17,10 +19,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
@@ -103,12 +103,22 @@ public class HomePageController implements Initializable {
 
             //Get all items and display them on Search Window
             while (rs.next()){
-                String id = rs.getString("ItemId");
-                String title = rs.getString("Title");
-                String category = rs.getString("Category");
-                Double price = rs.getDouble("Price");
-
-                String newRow = String.format("%-5s%-20s%-25s%-8s", id, title, category, price);
+                //Add items into an object for easy access to review page
+                items.add(new Items(
+                        rs.getInt("ItemId"),
+                        rs.getString("Username"),
+                        rs.getString("Title"),
+                        rs.getString("Description"),
+                        rs.getString("Category"),
+                        rs.getDouble("Price"),
+                        rs.getDate("Date_Posted")
+                ));
+                //Only show id, title, Category, and Price on Search Table
+                String newRow = String.format("%-5s%-20s%-25s%-8s",
+                        items.get(i).getItemId(),
+                        items.get(i).getTitle(),
+                        items.get(i).getCategory(),
+                        items.get(i).getPrice());
                 userSearchListView.getItems().addAll(newRow);
             }
         } catch (SQLException e) {

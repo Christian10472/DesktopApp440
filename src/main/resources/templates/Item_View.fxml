@@ -42,12 +42,13 @@
          <font>
             <Font size="15.0" />
          </font></Label>
-      <ScrollPane layoutX="64.0" layoutY="170.0" prefHeight="184.0" prefWidth="481.0">
-         <content>
-            <ListView fx:id="ReviewListView" fixedCellSize="20.0" prefHeight="200.0" prefWidth="499.0" />
-         </content>
-      </ScrollPane>
       <Button fx:id="BackButton" layoutX="60.0" layoutY="364.0" mnemonicParsing="false" onAction="#onBackClick" prefHeight="25.0" prefWidth="54.0" text="Back" />
       <Button layoutX="452.0" layoutY="364.0" mnemonicParsing="false" onAction="#onAddReviewClick" text="Add Review" />
+      <Label fx:id="SameUserLabel" layoutX="135.0" layoutY="362.0" prefHeight="21.0" prefWidth="271.0" textFill="RED">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <TextArea fx:id="ReviewTextArea" editable="false" layoutX="137.0" layoutY="170.0" prefHeight="168.0" prefWidth="313.0" />
    </children>
 </AnchorPane>
