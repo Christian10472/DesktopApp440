@@ -11,7 +11,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
@@ -76,7 +75,7 @@ public class AddReviewController implements Initializable {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 if (resultSet.getInt(1) >= 3) {
-                    //Promt for to many reviews in one day aka get a fucking life
+                    //Prompt for to many reviews in one day aka get a fucking life
                     return false;
                 }
             }
