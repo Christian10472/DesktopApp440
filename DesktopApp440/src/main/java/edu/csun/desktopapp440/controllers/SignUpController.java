@@ -78,7 +78,7 @@ public class SignUpController {
     protected void onSignUpButtonClick(ActionEvent event) {
         verified = true;
         //Checking if any parameters are null
-        isUserPropmptEmpty();
+        isUserPromptEmpty();
         doPasswordsMatch();
         //checking if parameters are valid to database
         if (verified) {
@@ -92,11 +92,11 @@ public class SignUpController {
 
     }
 
-    public void isUserPropmptEmpty() {
-        firstNameLabel.setText("");
-        usernameLabel.setText("");
-        emailLabel.setText("");
-        passwordLabel.setText("");
+    public void isUserPromptEmpty() {
+        firstNameText.setText("");
+        usernameText.setText("");
+        emailText.setText("");
+        passwordText.setText("");
         if ((isTextFieldEmpty(firstNameField)) || (isTextFieldEmpty(lastNameField))) {
             firstNameLabel.setText("*Please enter a valid name");
         }
