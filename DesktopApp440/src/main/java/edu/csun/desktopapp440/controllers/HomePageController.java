@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
@@ -80,33 +81,73 @@ public class HomePageController implements Initializable {
     @FXML
     public void onInitializeDatabaseButtonClick(ActionEvent event) {
 
+        final String checkIfTableExists = "SELECT count(*)\n" +
+                "FROM information_schema.tables\n" +
+                "WHERE table_schema = ?\n" +
+                "AND table_name = ?;";
+
+        try (Connection dbConnection = new UsersDatabase().getDatabaseConnection()) {
+            PreparedStatement checkIfTableExistsStatement =
+                    dbConnection.prepareStatement(checkIfTableExists);
+            checkIfTableExistsStatement.setString(1, "comp440database");
+            checkIfTableExistsStatement.setString(2, "reviews");
+            ResultSet resultSet = checkIfTableExistsStatement.executeQuery();
+            resultSet.next();
+            if(resultSet.getInt(1) <= 0) {
+                if(verifyAndInitializeReviewTables(dbConnection)) {
+                    initializeOrReinitializeTables(dbConnection, resultSet);
+                }
+            }
+
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    String.format("SQL Error: %s", e.getMessage()));
+        }
+    }
+
+    public boolean verifyAndInitializeReviewTables(Connection dbConnection) {
         final String checkIfItemExists = "SELECT count(*)\n" +
                 "FROM information_schema.tables\n" +
                 "WHERE table_schema = ?\n" +
                 "AND table_name = ?;";
-        final String reInitializeDatabase = "CALL ReinitializeItemsTable";
-        final String initializeDatabase = "CALL InitializeItemsTable";
-
-
-        try (Connection dbConnection = new UsersDatabase().getDatabaseConnection()) {
-            PreparedStatement checkIfItemExistsStatement =
+        final String initializeReviewTables = "CALL InitializeReviewsTable";
+        try {
+            PreparedStatement checkIfTableExistsStatement =
                     dbConnection.prepareStatement(checkIfItemExists);
-            checkIfItemExistsStatement.setString(1, "comp440database");
-            checkIfItemExistsStatement.setString(2, "items");
-            ResultSet resultSet = checkIfItemExistsStatement.executeQuery();
-            resultSet.next();
-            if(resultSet.getInt(1) > 0) {
+            checkIfTableExistsStatement.setString(1, "comp440database");
+            checkIfTableExistsStatement.setString(2, "items");
+            ResultSet itemsResultSet = checkIfTableExistsStatement.executeQuery();
+            itemsResultSet.next();
+            if (itemsResultSet.getInt(1) > 0) {
+                PreparedStatement initializeDatabaseStatement =
+                        dbConnection.prepareStatement(initializeReviewTables);
+                initializeDatabaseStatement.execute();
+                statusLabel.setText("Review table has been initialized");
+                return false;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    String.format("SQL Error: %s", e.getMessage()));
+        }
+        return true;
+    }
+    public void initializeOrReinitializeTables(Connection dbConnection, ResultSet resultSet) {
+        final String reInitializeTables = "CALL ReinitializeTables";
+        final String initializeTables = "CALL InitializeTables";
+        try {
+            if (resultSet.getInt(1) > 0) {
                 PreparedStatement reInitializeDatabaseStatement =
-                        dbConnection.prepareStatement(reInitializeDatabase);
+                        dbConnection.prepareStatement(reInitializeTables);
                 reInitializeDatabaseStatement.execute();
-                statusLabel.setText("Items table has been reinitialized");
+                statusLabel.setText("Database has been re-initialized");
             } else {
                 PreparedStatement initializeDatabaseStatement =
-                        dbConnection.prepareStatement(initializeDatabase);
+                        dbConnection.prepareStatement(initializeTables);
                 initializeDatabaseStatement.execute();
-                statusLabel.setText("Items table has been initialized");
+                statusLabel.setText("Database has been initialized");
             }
-
         } catch (SQLException e) {
             throw new RuntimeException(
                     String.format("SQL Error: %s", e.getMessage()));
