@@ -21,5 +21,6 @@
       <Button fx:id="searchButton" layoutX="420.0" layoutY="85.0" mnemonicParsing="false" onAction="#onSearchClick" prefHeight="25.0" prefWidth="61.0" text="Search" />
       <Button fx:id="addItemButton" layoutX="418.0" layoutY="356.0" mnemonicParsing="false" onAction="#onAddItemButtonClick" text="Add Item" />
       <Button fx:id="initializeDatabaseButton" layoutX="14.0" layoutY="356.0" mnemonicParsing="false" text="Initalize Database" onAction="#onInitializeDatabaseButtonClick" />
+      <Label fx:id="statusLabel" graphicTextGap="0.0" layoutX="134.0" layoutY="351.0" prefHeight="38.0" prefWidth="304.0"/>
    </children>
 </AnchorPane>

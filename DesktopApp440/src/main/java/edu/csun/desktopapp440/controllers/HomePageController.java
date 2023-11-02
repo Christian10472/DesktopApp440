@@ -13,6 +13,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -44,6 +45,9 @@ public class HomePageController implements Initializable {
     private ListView<String> userSearchListView;
     @FXML
     private TextField searchField;
+    @FXML
+    private Label statusLabel;
+
     private Users User;
     private ArrayList<Items> items = new ArrayList<>();
     private ArrayList<Reviews> itemReviews = new ArrayList<>();
@@ -95,10 +99,12 @@ public class HomePageController implements Initializable {
                 PreparedStatement reInitializeDatabaseStatement =
                         dbConnection.prepareStatement(reInitializeDatabase);
                 reInitializeDatabaseStatement.execute();
+                statusLabel.setText("Items table has been reinitialized");
             } else {
                 PreparedStatement initializeDatabaseStatement =
                         dbConnection.prepareStatement(initializeDatabase);
                 initializeDatabaseStatement.execute();
+                statusLabel.setText("Items table has been initialized");
             }
 
         } catch (SQLException e) {
