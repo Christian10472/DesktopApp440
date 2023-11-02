@@ -78,8 +78,8 @@ public class HomePageController implements Initializable {
 
         final String checkIfItemExists = "SELECT count(*)\n" +
                 "FROM information_schema.tables\n" +
-                "WHERE table_schema = 'comp440database'\n" +
-                "AND table_name = 'items';";
+                "WHERE table_schema = ?\n" +
+                "AND table_name = ?;";
         final String reInitializeDatabase = "CALL ReinitializeItemsTable";
         final String initializeDatabase = "CALL InitializeItemsTable";
 
@@ -87,6 +87,8 @@ public class HomePageController implements Initializable {
         try (Connection dbConnection = new UsersDatabase().getDatabaseConnection()) {
             PreparedStatement checkIfItemExistsStatement =
                     dbConnection.prepareStatement(checkIfItemExists);
+            checkIfItemExistsStatement.setString(1, "comp440database");
+            checkIfItemExistsStatement.setString(2, "items");
             ResultSet resultSet = checkIfItemExistsStatement.executeQuery();
             resultSet.next();
             if(resultSet.getInt(1) > 0) {
