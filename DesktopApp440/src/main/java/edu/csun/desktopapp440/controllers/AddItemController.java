@@ -63,6 +63,7 @@ public class AddItemController {
 
 
     /**
+     * @param event
      * When the add button is clicked
      * does a check if the input is valid and
      * the user has not passed the 3 item daily limit

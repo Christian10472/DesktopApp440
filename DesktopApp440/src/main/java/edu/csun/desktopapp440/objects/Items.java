@@ -1,4 +1,4 @@
-package com.example.desktopapp440.objects;
+package edu.csun.desktopapp440.objects;
 
 import java.sql.Date;
 

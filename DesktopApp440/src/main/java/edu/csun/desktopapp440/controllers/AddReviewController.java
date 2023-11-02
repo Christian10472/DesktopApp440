@@ -1,9 +1,9 @@
-package com.example.desktopapp440.controllers;
+package edu.csun.desktopapp440.controllers;
 
-import com.example.desktopapp440.database.UsersDatabase;
-import com.example.desktopapp440.objects.Items;
-import com.example.desktopapp440.objects.Reviews;
-import com.example.desktopapp440.objects.Users;
+import edu.csun.desktopapp440.database.UsersDatabase;
+import edu.csun.desktopapp440.objects.Items;
+import edu.csun.desktopapp440.objects.Reviews;
+import edu.csun.desktopapp440.objects.Users;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -90,7 +90,7 @@ public class AddReviewController implements Initializable {
         try {
             Connection dBConnection = new UsersDatabase().getDatabaseConnection();
             String sql = "INSERT INTO " +
-                    "Reviews(ItemId,Reviewer,Quality,Review,Date_Posted) " +
+                    "Reviews(ItemId,Reviewer,Quality,Review,DatePosted) " +
                     "VALUES(?, ?, ?, ?, ?)";
             PreparedStatement ps = dBConnection.prepareStatement(sql);
             ps.setInt(1, item.getItemId());
@@ -118,9 +118,9 @@ public class AddReviewController implements Initializable {
 
     public void goBack(ActionEvent event) throws IOException{
         try{
-            URL addITemURL = getClass().getResource("/templates/Item_View.fxml");
+            URL addITemURL = getClass().getResource("/templates/ItemView.fxml");
             if (addITemURL == null){
-                throw new NullPointerException("Missing resources on: Item_View.fxml");
+                throw new NullPointerException("Missing resources on: ItemView.fxml");
             }
             FXMLLoader loader = new FXMLLoader(addITemURL);
             Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();

@@ -7,6 +7,7 @@ import edu.csun.desktopapp440.objects.Users;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -57,9 +58,9 @@ public class HomePageController implements Initializable {
 
     public void onAddItemButtonClick(ActionEvent event){
         try{
-            URL addITemURL = getClass().getResource("/templates/Add_Item.fxml");
+            URL addITemURL = getClass().getResource("/templates/AddItem.fxml");
             if (addITemURL == null){
-                throw new NullPointerException("Missing resources on: Add_Item.fxml");
+                throw new NullPointerException("Missing resources on: AddItem.fxml");
             }
             FXMLLoader loader = new FXMLLoader(addITemURL);
             Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -69,6 +70,38 @@ public class HomePageController implements Initializable {
             stage.show();
         } catch (IOException e) {
             throw new RuntimeException(String.format("Error loading HomePage.fxml: %s", e.getMessage()));
+        }
+    }
+
+    @FXML
+    public void onInitializeDatabaseButtonClick(ActionEvent event) {
+
+        final String checkIfItemExists = "SELECT count(*)\n" +
+                "FROM information_schema.tables\n" +
+                "WHERE table_schema = 'comp440database'\n" +
+                "AND table_name = 'items';";
+        final String reInitializeDatabase = "CALL ReinitializeItemsTable";
+        final String initializeDatabase = "CALL InitializeItemsTable";
+
+
+        try (Connection dbConnection = new UsersDatabase().getDatabaseConnection()) {
+            PreparedStatement checkIfItemExistsStatement =
+                    dbConnection.prepareStatement(checkIfItemExists);
+            ResultSet resultSet = checkIfItemExistsStatement.executeQuery();
+            resultSet.next();
+            if(resultSet.getInt(1) > 0) {
+                PreparedStatement reInitializeDatabaseStatement =
+                        dbConnection.prepareStatement(reInitializeDatabase);
+                reInitializeDatabaseStatement.execute();
+            } else {
+                PreparedStatement initializeDatabaseStatement =
+                        dbConnection.prepareStatement(initializeDatabase);
+                initializeDatabaseStatement.execute();
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    String.format("SQL Error: %s", e.getMessage()));
         }
     }
 
@@ -109,7 +142,7 @@ public class HomePageController implements Initializable {
                         rs.getString("Description"),
                         rs.getString("Category"),
                         rs.getDouble("Price"),
-                        rs.getDate("Date_Posted")
+                        rs.getDate("DatePosted")
                 ));
                 //Only show id, title, Category, and Price on Search Table
                 String newRow = String.format("%-5s%-20s%-25s%-8s",
@@ -143,7 +176,7 @@ public class HomePageController implements Initializable {
                         rs.getString("Reviewer"),
                         rs.getString("Quality"),
                         rs.getString("Review"),
-                        rs.getDate("Date_Posted")
+                        rs.getDate("DatePosted")
                 ));
             }
         } catch (SQLException e) {
@@ -162,9 +195,9 @@ public class HomePageController implements Initializable {
 
                 //Try to load the Item_View FXML
                 try {
-                    URL viewItemURL = getClass().getResource("/templates/Item_View.fxml");
+                    URL viewItemURL = getClass().getResource("/templates/ItemView.fxml");
                     if (viewItemURL == null) {
-                        throw new NullPointerException("Missing resources on: Item_View.fxml");
+                        throw new NullPointerException("Missing resources on: ItemView.fxml");
                     }
                     FXMLLoader loader = new FXMLLoader(viewItemURL);
                     Stage stage = (Stage) userSearchListView.getScene().getWindow();

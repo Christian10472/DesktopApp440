@@ -93,10 +93,10 @@ public class SignUpController {
     }
 
     public void isUserPromptEmpty() {
-        firstNameText.setText("");
-        usernameText.setText("");
-        emailText.setText("");
-        passwordText.setText("");
+        firstNameLabel.setText("");
+        usernameLabel.setText("");
+        emailLabel.setText("");
+        passwordLabel.setText("");
         if ((isTextFieldEmpty(firstNameField)) || (isTextFieldEmpty(lastNameField))) {
             firstNameLabel.setText("*Please enter a valid name");
         }
