@@ -1,3 +1,12 @@
+/**
+ * Mathew Nuval
+ * Anthony Plasencia
+ * Christian Perez
+ * Professor Ebrahimi
+ * Comp 440
+ * 2023 November 3
+ */
+
 package edu.csun.desktopapp440.controllers;
 
 import edu.csun.desktopapp440.database.UsersDatabase;
@@ -16,6 +25,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 public class SignUpController {
@@ -32,11 +42,13 @@ public class SignUpController {
         log = Logger.getLogger(SignUpController.class.getName());
     }
 
+
     private boolean verified;
     private Stage stage;
     private Scene scene;
     @FXML
     private Label firstNameLabel,
+            lastNameLabel,
             usernameLabel,
             emailLabel,
             passwordLabel;
@@ -76,83 +88,92 @@ public class SignUpController {
 
     @FXML
     protected void onSignUpButtonClick(ActionEvent event) {
-        verified = true;
-        //Checking if any parameters are null
-        isUserPromptEmpty();
-        doPasswordsMatch();
-        //checking if parameters are valid to database
-        if (verified) {
-            doesUserExist();
-            if (verified) {
-                addUser();
-                onSuccessSignUpButtonClick(event);
-            }
-
+        //Verify user inputs for sign up
+        if (verifyNewUser()) {
+            addUser();
+            onSuccessSignUpButtonClick(event);
         }
-
     }
 
-    public void isUserPromptEmpty() {
-        firstNameLabel.setText("");
-        usernameLabel.setText("");
-        emailLabel.setText("");
-        passwordLabel.setText("");
-        if ((isTextFieldEmpty(firstNameField)) || (isTextFieldEmpty(lastNameField))) {
-            firstNameLabel.setText("*Please enter a valid name");
+    public boolean verifyNewUser() {
+        boolean results = true;
+        if (isUserPromptEmpty()) {
+            results = false;
         }
-        if (isTextFieldEmpty(usernameField)) {
-            usernameLabel.setText("*Please enter a valid Username");
+        if (!doPasswordsMatch()) {
+            passwordLabel.setText("* Password do not match");
+            results = false;
         }
-        if (isTextFieldEmpty(emailField)) {
-            emailLabel.setText("*Please enter a valid email address");
+        if (doesUserExist()) {
+            results = false;
         }
-        if (isTextFieldEmpty(passwordField)) {
-            passwordLabel.setText("*Please enter a valid email password");
+        return results;
+    }
+
+    public boolean isUserPromptEmpty() {
+        boolean results = false;
+        HashMap<TextField, Label> userFields = new HashMap<>();
+        userFields.put(firstNameField, firstNameLabel);
+        userFields.put(lastNameField, lastNameLabel);
+        userFields.put(usernameField, usernameLabel);
+        userFields.put(emailField, emailLabel);
+        userFields.put(passwordField, passwordLabel);
+        HashMap<Label, String> userLabels = new HashMap<>();
+        userLabels.put(firstNameLabel, "First Name");
+        userLabels.put(lastNameLabel, "Last Name");
+        userLabels.put(usernameLabel, "Username");
+        userLabels.put(emailLabel, "Email");
+        userLabels.put(passwordLabel, "Password");
+
+        for(TextField userField : userFields.keySet()) {
+            results = isTextFieldEmpty(userField);
+            if (results) {
+                userFields.get(
+                        userField).setText(
+                                String.format(
+                                        "* Please enter %s",
+                                        userLabels.get(userFields.get(userField))));
+            }
         }
+        return results;
     }
 
     public boolean isTextFieldEmpty(TextField x) {
-        if (x.getText().isEmpty()) {
-            verified = false;
-            return true;
-        }
-        return false;
+        return x.getText().isEmpty();
     }
 
-    public void doesUserExist() {
+    public boolean doesUserExist() {
         try {
             Connection dBConnection =
                     new UsersDatabase().getDatabaseConnection();
 
-            final String checkUsername = "SELECT * FROM Users WHERE Username = ?;";
+            final String checkUsername = "SELECT * FROM Users WHERE Username = ? OR Email = ?";
             PreparedStatement verifyUser = dBConnection.prepareStatement(checkUsername);
             verifyUser.setString(1, usernameField.getText());
+            verifyUser.setString(2, emailField.getText());
             ResultSet usersResultSet = verifyUser.executeQuery();
-
             if (usersResultSet.next()) {
-                usernameLabel.setText("*Username is already taken");
-                verified = false;
-            }
-
-            final String checkEmail = "SELECT * FROM Users WHERE Email = ?;";
-            verifyUser = dBConnection.prepareStatement(checkEmail);
-            verifyUser.setString(1, emailField.getText());
-            usersResultSet = verifyUser.executeQuery();
-            if (usersResultSet.next()) {
-                emailLabel.setText("*Email is already in use");
-                verified = false;
+                if (usersResultSet.getString(
+                        "Username").equalsIgnoreCase(
+                        usernameField.getText())) {
+                    usernameLabel.setText("* Username is already taken");
+                }
+                if (usersResultSet.getString(
+                        "Email").equalsIgnoreCase(
+                        emailField.getText())) {
+                    emailLabel.setText("* Email is already in use");
+                }
+                return true;
             }
         } catch (SQLException e) {
             throw new RuntimeException(
                     String.format("Error connecting to database: %s",e.getMessage()));
         }
+        return false;
     }
 
-    public void doPasswordsMatch() {
-        if (!(passwordField.getText()).equals(confirmPasswordField.getText())) {
-            passwordLabel.setText("*Passwords do not match");
-            verified = false;
-        }
+    public boolean doPasswordsMatch() {
+        return passwordField.getText().equals(confirmPasswordField.getText());
     }
 
     public void addUser() {

@@ -1,3 +1,12 @@
+/**
+ * Mathew Nuval
+ * Anthony Plasencia
+ * Christian Perez
+ * Professor Ebrahimi
+ * Comp 440
+ * 2023 November 3
+ */
+
 package edu.csun.desktopapp440.controllers;
 
 import edu.csun.desktopapp440.database.UsersDatabase;

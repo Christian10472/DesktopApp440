@@ -157,4 +157,6 @@ AND table_name = 'items';
 DROP TABLE reviews;
 DROP TABLE items;
 
+SELECT * FROM Users;
+
 SELECT * FROM items;

@@ -1,3 +1,12 @@
+/**
+ * Mathew Nuval
+ * Anthony Plasencia
+ * Christian Perez
+ * Professor Ebrahimi
+ * Comp 440
+ * 2023 November 3
+ */
+
 package edu.csun.desktopapp440.controllers;
 
 import edu.csun.desktopapp440.database.UsersDatabase;
@@ -120,7 +129,7 @@ public class LogInController {
             resultSet = verifyLogin.executeQuery();
 
             if (resultSet.next()) {
-                if( (usernameInput.equals(resultSet.getString("Username"))) && passwordInput.equals(resultSet.getString("Password"))) {
+                if( (usernameInput.equalsIgnoreCase(resultSet.getString("Username"))) && passwordInput.equals(resultSet.getString("Password"))) {
 
                     users = new Users();
                     users.setUsername(resultSet.getString(("Username")));
