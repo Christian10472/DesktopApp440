@@ -26,7 +26,7 @@ CONSTRAINT Fk_Items_Reviewer FOREIGN KEY(Reviewer) REFERENCES users(Username)
 DROP TABLE reviews;
 
 -- Create procedures
-DELIMITER // 
+DELIMITER $$ 
 CREATE PROCEDURE InitializeItemsTable()
 BEGIN
   SET @sql = CONCAT('CREATE TABLE ', 'Items', ' (
@@ -43,10 +43,11 @@ CONSTRAINT Fk_Items_Username FOREIGN KEY(Username) REFERENCES users(Username)
   PREPARE stmt FROM @sql;
   EXECUTE stmt;
   DEALLOCATE PREPARE stmt;
-END; 
-DELIMITER; 
+END$$
 
-DELIMITER // 
+DELIMITER ; 
+
+DELIMITER $$ 
 CREATE PROCEDURE ReinitializeItemsTable()
 BEGIN
   DROP TABLE Items;
@@ -64,10 +65,12 @@ CONSTRAINT Fk_Items_Username FOREIGN KEY(Username) REFERENCES users(Username)
   PREPARE stmt FROM @sql;
   EXECUTE stmt;
   DEALLOCATE PREPARE stmt;
-END; 
+END$$
+
+DELIMITER ; 
 
 
-DELIMITER // 
+DELIMITER $$
 CREATE PROCEDURE InitializeReviewsTable()
 BEGIN
   SET @sql = CONCAT('CREATE TABLE ', 'Reviews', ' (
@@ -84,8 +87,9 @@ CONSTRAINT Fk_Items_Reviewer FOREIGN KEY(Reviewer) REFERENCES users(Username)
   PREPARE stmt FROM @sql;
   EXECUTE stmt;
   DEALLOCATE PREPARE stmt;
-END; 
-DELIMITER; 
+END$$
+
+DELIMITER ; 
 
 DELIMITER // 
 CREATE PROCEDURE ReinitializeReviewsTable()
@@ -105,26 +109,29 @@ CONSTRAINT Fk_Items_Reviewer FOREIGN KEY(Reviewer) REFERENCES users(Username)
   PREPARE stmt FROM @sql;
   EXECUTE stmt;
   DEALLOCATE PREPARE stmt;
-END;  
+END$$
 
-DELIMITER // 
+DELIMITER ; 
+
+DELIMITER $$
 CREATE PROCEDURE ReinitializeTables()
 BEGIN
   DROP TABLE reviews;
   DROP TABLE items;
   CALL InitializeItemsTable;
   CALL InitializeReviewsTable;
-END;
+END$$
+DELIMITER ;
 
-DELIMITER // 
+DELIMITER $$ 
 CREATE PROCEDURE InitializeTables()
 BEGIN
   CALL InitializeItemsTable;
   CALL InitializeReviewsTable;
-END;
+END$$
+DELIMITER ;
 
 -- Drop procedures
-DELIMITER //
 DROP PROCEDURE ReinitializeItemsTable;
 DROP PROCEDURE InitializeItemsTable;
 DROP PROCEDURE InitializeReviewsTable;
@@ -146,9 +153,8 @@ FROM information_schema.tables
 WHERE table_schema = 'comp440database'
 AND table_name = 'items';
 
+-- Additional scripts
 DROP TABLE reviews;
 DROP TABLE items;
-
-
 
 SELECT * FROM items;

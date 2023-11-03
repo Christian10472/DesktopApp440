@@ -97,6 +97,8 @@ public class HomePageController implements Initializable {
                 if(verifyAndInitializeReviewTables(dbConnection)) {
                     initializeOrReinitializeTables(dbConnection, resultSet);
                 }
+            } else {
+                initializeOrReinitializeTables(dbConnection, resultSet);
             }
 
 
