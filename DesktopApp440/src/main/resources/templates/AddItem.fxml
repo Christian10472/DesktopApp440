@@ -14,7 +14,7 @@
       <Label layoutX="166.0" layoutY="214.0" prefHeight="23.0" prefWidth="68.0" text="Description" />
       <Label layoutX="166.0" layoutY="176.0" prefHeight="23.0" prefWidth="68.0" text="Catagory" />
       <Label layoutX="166.0" layoutY="140.0" prefHeight="23.0" prefWidth="68.0" text="Price (USD)" />
-      <TextField fx:id="ItemTitleTextFiled" layoutX="235.0" layoutY="104.0" />
+      <TextField fx:id="ItemTitleTextField" layoutX="235.0" layoutY="104.0" />
       <TextField fx:id="ItemPriceTextField" layoutX="235.0" layoutY="140.0" />
       <TextField fx:id="ItemCatagoryTextField" layoutX="235.0" layoutY="175.0" />
       <TextArea fx:id="DescriptionTextArea" layoutX="235.0" layoutY="206.0" prefHeight="127.0" prefWidth="149.0" />

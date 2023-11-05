@@ -32,14 +32,25 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 public class AddReviewController implements Initializable {
 
+    /**
+     * Log variable
+     */
+    private static final Logger log;
+
+    /**
+     * Logger for debugging
+     */
+    static {
+        System.setProperty("java.util.logging.SimpleFormatter.format", "[%4$-7s] %5$s %n");
+        log = Logger.getLogger(AddReviewController.class.getName());
+    }
 
     @FXML
     private ChoiceBox<String> conditionChoiceBox;
-
-
 
     @FXML
     private TextArea reviewTextArea;
@@ -47,9 +58,13 @@ public class AddReviewController implements Initializable {
     private Users user;
     private Items item;
     private ArrayList<Reviews> reviews;
-    private final String[] condition = {"excellent", "good", "fair", "poor"};
+    private final String[] condition =
+            {"excellent", "good", "fair", "poor"};
 
-    public void initialiseAddReviewController(Users users , Items item, ArrayList<Reviews> reviews) {
+    public void initialiseAddReviewController(
+            Users users,
+            Items item,
+            ArrayList<Reviews> reviews) {
         this.reviews = reviews;
         user = users;
         this.item = item;
@@ -75,12 +90,22 @@ public class AddReviewController implements Initializable {
         LocalDate endDate = currentDate.plusDays(1).atStartOfDay().toLocalDate();
 
         Connection dbConnection = new UsersDatabase().getDatabaseConnection();
-        final String query = "SELECT COUNT(*) FROM Reviews WHERE Reviewer = ? AND date BETWEEN ? AND ?";
+        final String query =
+                "SELECT COUNT(*) " +
+                "FROM Reviews " +
+                "WHERE Reviewer = ? AND date BETWEEN ? AND ?";
         try {
-            PreparedStatement preparedStatement = dbConnection.prepareStatement(query);
-            preparedStatement.setString(1, user.getUsername());
-            preparedStatement.setDate(2, java.sql.Date.valueOf(startDate));
-            preparedStatement.setDate(3, java.sql.Date.valueOf(endDate));
+            PreparedStatement preparedStatement =
+                    dbConnection.prepareStatement(query);
+            preparedStatement.setString(
+                    1,
+                    user.getUsername());
+            preparedStatement.setDate(
+                    2,
+                    java.sql.Date.valueOf(startDate));
+            preparedStatement.setDate(
+                    3,
+                    java.sql.Date.valueOf(endDate));
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 if (resultSet.getInt(1) >= 3) {
@@ -98,7 +123,8 @@ public class AddReviewController implements Initializable {
     private void addReview() {
         try {
             Connection dBConnection = new UsersDatabase().getDatabaseConnection();
-            String sql = "INSERT INTO " +
+            String sql =
+                    "INSERT INTO " +
                     "Reviews(ItemId,Reviewer,Quality,Review,DatePosted) " +
                     "VALUES(?, ?, ?, ?, ?)";
             PreparedStatement ps = dBConnection.prepareStatement(sql);
@@ -110,7 +136,12 @@ public class AddReviewController implements Initializable {
             ps.executeUpdate();
 
             //Adds to Review Object
-            reviews.add(new Reviews(user.getUsername(),conditionChoiceBox.getValue(),reviewTextArea.getText(),java.sql.Date.valueOf(LocalDate.now())));
+            reviews.add(
+                    new Reviews(
+                            user.getUsername(),
+                            conditionChoiceBox.getValue(),
+                            reviewTextArea.getText(),
+                            java.sql.Date.valueOf(LocalDate.now())));
 
             dBConnection.close();
         } catch (SQLException e) {
@@ -121,15 +152,17 @@ public class AddReviewController implements Initializable {
         }
     }
 
-    public void onBackButtonClick(ActionEvent actionEvent) throws IOException {
+    public void onBackButtonClick(ActionEvent actionEvent) {
         goBack(actionEvent);
     }
 
-    public void goBack(ActionEvent event) throws IOException{
+    public void goBack(ActionEvent event) {
         try{
-            URL addITemURL = getClass().getResource("/templates/ItemView.fxml");
+            URL addITemURL =
+                    getClass().getResource("/templates/ItemView.fxml");
             if (addITemURL == null){
-                throw new NullPointerException("Missing resources on: ItemView.fxml");
+                throw new NullPointerException(
+                        "Missing resources on: ItemView.fxml");
             }
             FXMLLoader loader = new FXMLLoader(addITemURL);
             Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -138,7 +171,10 @@ public class AddReviewController implements Initializable {
             controller.initialiseItemViewController(user,item,reviews);
             stage.show();
         } catch (IOException e) {
-            throw new RuntimeException(String.format("Error loading HomePage.fxml: %s", e.getMessage()));
+            throw new RuntimeException(
+                    String.format(
+                            "Error loading HomePage.fxml: %s",
+                            e.getMessage()));
         }
     }
 }
