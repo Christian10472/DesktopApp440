@@ -130,16 +130,14 @@ public class AddItemController {
      */
     public boolean canUserAddItem(String username) {
         LocalDate currentDate = LocalDate.now();
-        LocalDate startDate = currentDate.atStartOfDay().toLocalDate();
-        LocalDate endDate = currentDate.plusDays(1).atStartOfDay().toLocalDate();
+
 
         Connection dbConnection = new UsersDatabase().getDatabaseConnection();
-        final String query = "SELECT COUNT(*) FROM items WHERE username = ? AND date BETWEEN ? AND ?";
+        final String query = "select count(*) from items where Username = ? and DatePosted = ?";
         try {
             PreparedStatement preparedStatement = dbConnection.prepareStatement(query);
             preparedStatement.setString(1, username);
-            preparedStatement.setDate(2, java.sql.Date.valueOf(startDate));
-            preparedStatement.setDate(3, java.sql.Date.valueOf(endDate));
+            preparedStatement.setDate(2, java.sql.Date.valueOf(currentDate));
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 if (resultSet.getInt(1) >= 3) {

@@ -128,7 +128,7 @@ public class ItemViewController {
             controller.initialiseAddReviewController(user, items,reviews);
             stage.show();
         } catch (IOException e) {
-            throw new RuntimeException(String.format("Error loading HomePage.fxml: %s", e.getMessage()));
+            e.printStackTrace();
         }
     }
 }

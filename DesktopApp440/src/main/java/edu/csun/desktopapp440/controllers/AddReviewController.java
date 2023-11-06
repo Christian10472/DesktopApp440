@@ -20,6 +20,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
@@ -39,7 +40,8 @@ public class AddReviewController implements Initializable {
     @FXML
     private ChoiceBox<String> conditionChoiceBox;
 
-
+    @FXML
+    private Label TooManyReviews;
 
     @FXML
     private TextArea reviewTextArea;
@@ -71,20 +73,17 @@ public class AddReviewController implements Initializable {
 
     public boolean checkIfThreeOrMoreReviews(){
         LocalDate currentDate = LocalDate.now();
-        LocalDate startDate = currentDate.atStartOfDay().toLocalDate();
-        LocalDate endDate = currentDate.plusDays(1).atStartOfDay().toLocalDate();
 
         Connection dbConnection = new UsersDatabase().getDatabaseConnection();
-        final String query = "SELECT COUNT(*) FROM Reviews WHERE Reviewer = ? AND date BETWEEN ? AND ?";
+        final String query = "SELECT COUNT(*) FROM Reviews WHERE Reviewer = ? AND DatePosted = ?";
         try {
             PreparedStatement preparedStatement = dbConnection.prepareStatement(query);
             preparedStatement.setString(1, user.getUsername());
-            preparedStatement.setDate(2, java.sql.Date.valueOf(startDate));
-            preparedStatement.setDate(3, java.sql.Date.valueOf(endDate));
+            preparedStatement.setDate(2, java.sql.Date.valueOf(currentDate));
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 if (resultSet.getInt(1) >= 3) {
-                    //Prompt for to many reviews in one day aka get a fucking life
+                    TooManyReviews.setText("You have already added 3 reviews today");
                     return false;
                 }
             }
