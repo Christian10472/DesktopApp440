@@ -35,7 +35,7 @@ public class AddItemController {
     private TextArea DescriptionTextArea;
 
     @FXML
-    private TextField ItemCatagoryTextField,ItemPriceTextField,ItemTitleTextFiled;
+    private TextField ItemCatagoryTextField,ItemPriceTextField, ItemTitleTextField;
 
     @FXML
     private Label TitleLabel, CatagoryLabel, PriceLabel, DescriptionLabel,tooManyItems;
@@ -70,7 +70,7 @@ public class AddItemController {
      */
     public void onAddButtonAction(ActionEvent event) {
         if (checkInput() && canUserAddItem(user.getUsername())) {
-            title = ItemTitleTextFiled.getText();
+            title = ItemTitleTextField.getText();
             category = ItemCatagoryTextField.getText();
             description = DescriptionTextArea.getText();
             price = Double.parseDouble(ItemPriceTextField.getText());
@@ -84,7 +84,7 @@ public class AddItemController {
      * labels if any errors were made
      */
     private void clearInput() {
-        ItemTitleTextFiled.clear();
+        ItemTitleTextField.clear();
         ItemCatagoryTextField.clear();
         DescriptionTextArea.clear();
         ItemPriceTextField.clear();
@@ -101,7 +101,9 @@ public class AddItemController {
      */
     public boolean checkInput() {
         boolean valid=true;
-        if (ItemTitleTextFiled.getText().isEmpty()) {
+
+
+        if (ItemTitleTextField.getText().isEmpty()) {
             TitleLabel.setText("Please enter a title");
             valid=false;
         }
@@ -148,7 +150,8 @@ public class AddItemController {
                 dbConnection.close();
             }
         } catch (SQLException e) {
-            String.format("SQL Error: %s", e.getMessage());
+            throw new RuntimeException(
+                    String.format("SQL Error: %s", e.getMessage()));
         }
         return true;
 

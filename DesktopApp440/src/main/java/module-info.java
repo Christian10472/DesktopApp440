@@ -1,4 +1,4 @@
-module com.example.desktopapp440 {
+module edu.csun.desktopapp440 {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.sql;

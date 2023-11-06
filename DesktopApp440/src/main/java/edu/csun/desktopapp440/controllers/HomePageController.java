@@ -184,11 +184,27 @@ public class HomePageController implements Initializable {
         userSearchListView.getItems().clear();
 
         try{
-            Connection dBConnection = new UsersDatabase().getDatabaseConnection();
-            String query = "SELECT * FROM Items WHERE Category Like ?";
-            PreparedStatement ps = dBConnection.prepareStatement(query);
-            String userSearch = "%" + searchField.getText() + "%";
-            ps.setString(1, userSearch);
+            StringBuilder query =
+                    new StringBuilder(
+                            "SELECT * FROM items WHERE");
+            String[] searchArray = searchField.getText().split(",");
+            for(int i = 0; i < searchArray.length; i++) {
+                if(i == 0) {
+                    query.append(" Category LIKE ?");
+                } else {
+                    query.append(" OR Category LIKE ?");
+                }
+            }
+
+            Connection dBConnection =
+                    new UsersDatabase().getDatabaseConnection();
+            PreparedStatement ps =
+                    dBConnection.prepareStatement(query.toString());
+            int index = 1;
+            for (String searchItem : searchArray) {
+                String preparedSearchItem = "%" + searchItem.trim() + "%";
+                ps.setString(index++, preparedSearchItem);
+            }
             ResultSet rs = ps.executeQuery();
 
             //Get all items and display them on Search Window
