@@ -330,7 +330,7 @@ DatePosted
 '(
 ''TestUser'',
 ''Item2'',
-''Category1, Category2'',
+''Category2'',
 ''Description for Item2'',
 2000.00,
 ''2023-1-2''
@@ -357,7 +357,7 @@ DatePosted
 '(
 ''TestUser'',
 ''Item3'',
-''Category3, Category2'',
+''Category3'',
 ''Description for Item3'',
 3000.00,
 ''2023-1-3''
