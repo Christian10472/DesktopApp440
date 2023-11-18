@@ -25,13 +25,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
@@ -209,6 +210,9 @@ public class HomePageController implements Initializable {
 
             //Get all items and display them on Search Window
             int i = 0;
+            if (!items.isEmpty()) {
+                items.clear();
+            }
             while (rs.next()){
                 //Add items into an object for easy access to review page
                 items.add(new Items(
@@ -241,7 +245,7 @@ public class HomePageController implements Initializable {
         int selectedItemId= items.get(row).getItemId();
         try{
             Connection dBConnection = new UsersDatabase().getDatabaseConnection();
-            String query = "SELECT * FROM Reviews where ItemId = ?";
+            String query = "SELECT * FROM Reviews WHERE ItemId = ?";
             PreparedStatement ps = dBConnection.prepareStatement(query);
             ps.setInt(1, selectedItemId);
             ResultSet rs = ps.executeQuery();
@@ -293,4 +297,12 @@ public class HomePageController implements Initializable {
         });
     }
 
+    public void onSearchEvent(Event event) {
+        if(event.getClass() == KeyEvent.class) {
+            if(((KeyEvent) event).getCode() != KeyCode.ENTER) {
+                return;
+            }
+        }
+        onSearchClick();
+    }
 }
