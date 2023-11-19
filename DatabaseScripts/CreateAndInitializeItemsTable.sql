@@ -251,7 +251,7 @@ DatePosted
 '(
 4,
 ''TestUser2'',
-''good'',
+''poor'',
 ''Item4 is poor'',
 ''2023-1-4''
 )');
@@ -522,3 +522,5 @@ DROP TABLE items;
 SELECT * FROM Users;
 
 SELECT * FROM items;
+
+SELECT * FROM reviews;

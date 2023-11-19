@@ -60,8 +60,8 @@ public class HomePageController implements Initializable {
     private Label statusLabel;
 
     private Users User;
-    private ArrayList<Items> items = new ArrayList<>();
-    private ArrayList<Reviews> itemReviews = new ArrayList<>();
+    private final ArrayList<Items> items = new ArrayList<>();
+    private final ArrayList<Reviews> itemReviews = new ArrayList<>();
 
     public void initialiseHomepage(Users user) {
        User = user;
