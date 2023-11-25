@@ -58,11 +58,13 @@ public class HomePageController implements Initializable {
     @FXML
     private ListView<String> userSearchListView;
     @FXML
-    private TextField searchField;
+    private TextField searchField,FirstCategory,SecondCategory,
+                       User1,User2;
     @FXML
     private Label statusLabel;
     @FXML
     private Button SearchButton,LogOutButton;
+    private DatePicker Dates;
 
     private Users User;
     private final ArrayList<Items> items = new ArrayList<>();
@@ -193,9 +195,30 @@ public class HomePageController implements Initializable {
 
 
     public void onSearchClick(){
-        if(getUserSearch()){
-            searchUserRequestedItem();
-        }
+        switch (searchChoiceBox.getValue()) {
+            case "Category":
+               if (getUserSearch()) {
+                   searchUserRequestedItem();
+               }
+               break;
+            case "2 items Same Day Different Categories":
+                if(twoItemsSameDayInput())
+                    queryTwoItemsSameDay();
+                break;
+            case "All the items posted by user X, such that all the comments are Excellent or good":
+                if(userXAllExcellentOrGoodInput());
+                    queryUserXAllExcellentOrGood();
+                break;
+            case "Most Posts On Certain Day":
+                if(getMostPostedItemsInput())
+                    getMostPostedItems();
+                break;
+            case "Favorites From User X and User Y":
+                if(favoriteFromUserXandYInput())
+                    favoriteFromUserXandY();
+                break;
+
+       }
     }
 
 
@@ -359,22 +382,22 @@ public class HomePageController implements Initializable {
                 break;
             case "2 items Same Day Different Categories":
                 homePageHBox.setSpacing(10);
-                TextField FirstCategory= new TextField();
-                TextField SecondCategory= new TextField();
-                TextField Date= new TextField();
+                FirstCategory= new TextField();
+                SecondCategory= new TextField();
+                Dates = new DatePicker();
 
                 FirstCategory.setPromptText("Category 1");
                 FirstCategory.setPrefWidth(100);
                 SecondCategory.setPromptText("Category 2");
                 SecondCategory.setPrefWidth(100);
-                Date.setPromptText("Date");
-                Date.setPrefWidth(100);
+                Dates.setPromptText("Date");
+                Dates.setPrefWidth(100);
 
                 homePageHBox.getChildren().addAll(
                         searchChoiceBox,
                         FirstCategory,
                         SecondCategory,
-                        Date,
+                        Dates,
                         SearchButton,
                         LogOutButton);
 
@@ -388,20 +411,18 @@ public class HomePageController implements Initializable {
                 break;
             case "Most Posts On Certain Day":
                 homePageHBox.setSpacing(25);
-                TextField Day= new TextField();
-                Day.setPrefWidth(100);
-                Day.setPromptText("YYYY-MM-DD");
+                Dates = new DatePicker();
+                Dates.setPromptText("Enter a Date");
                 homePageHBox.getChildren().addAll(
                         searchChoiceBox,
-                        Day,
+                        Dates,
                         SearchButton,
                         LogOutButton);
-                //CHeck if date is valid
                 break;
             case "Favorites From User X and User Y":
                 homePageHBox.setSpacing(10);
-                TextField User1= new TextField();
-                TextField User2= new TextField();
+                User1= new TextField();
+                User2= new TextField();
                 User1.setPromptText("User 1");
                 User1.setPrefWidth(100);
                 User2.setPromptText("User 2");
