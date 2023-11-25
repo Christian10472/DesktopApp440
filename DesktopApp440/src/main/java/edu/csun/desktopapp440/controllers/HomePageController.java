@@ -22,11 +22,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -53,19 +52,45 @@ public class HomePageController implements Initializable {
     }
 
     @FXML
+    private HBox homePageHBox;
+    @FXML
+    private ChoiceBox<String> searchChoiceBox;
+    @FXML
     private ListView<String> userSearchListView;
     @FXML
     private TextField searchField;
     @FXML
     private Label statusLabel;
+    @FXML
+    private Button SearchButton,LogOutButton;
 
     private Users User;
     private final ArrayList<Items> items = new ArrayList<>();
     private final ArrayList<Reviews> itemReviews = new ArrayList<>();
+    private final String[] SearchOptions =
+            {"Category",
+            "Highest Price in Each Category",
+            "2 items Same Day Different Categories",
+            "All the items posted by user X, such that all the comments are Excellent or good",
+            "Most Posts On Certain Day",
+            "Favorites From User X and User Y",
+            "users who never posted a Excellent review",
+            "users who never posted a poor review",
+            "Only Poor Item Reviews",
+            "No Poor Item Reviews",};
 
     public void initialiseHomepage(Users user) {
-       User = user;
+        User = user;
+
+        searchChoiceBox.getItems().addAll(SearchOptions);
+        searchChoiceBox.setValue(SearchOptions[0]);
+
+        homePageHBox.setSpacing(10);
+        homePageHBox.getChildren().addAll(searchChoiceBox,searchField,SearchButton,LogOutButton);
+
+        searchChoiceBox.setOnAction(this::updateSearchField);
     }
+
 
     public void onLogOutButtonClick(ActionEvent event) {
         MainController.returnToLoginPage(event, getClass());
@@ -304,5 +329,150 @@ public class HomePageController implements Initializable {
             }
         }
         onSearchClick();
+    }
+
+    private void updateSearchField(ActionEvent event) {
+        clearHbox();
+        clearListView();
+        switch (searchChoiceBox.getValue()) {
+            case "Category":
+                homePageHBox.setSpacing(10);
+                homePageHBox.getChildren().addAll(
+                        searchChoiceBox,
+                        searchField,
+                        SearchButton,
+                        LogOutButton);
+
+                searchField.setPromptText("Enter Category");
+                break;
+            case "Highest Price in Each Category":
+                homePageHBox.setSpacing(375);
+                homePageHBox.getChildren().addAll(
+                        searchChoiceBox,
+                        LogOutButton);
+
+                GetHighestPriceInEachCategory();
+                break;
+            case "2 items Same Day Different Categories":
+                homePageHBox.setSpacing(10);
+                TextField FirstCategory= new TextField();
+                TextField SecondCategory= new TextField();
+                TextField Date= new TextField();
+
+                FirstCategory.setPromptText("Category 1");
+                FirstCategory.setPrefWidth(100);
+                SecondCategory.setPromptText("Category 2");
+                SecondCategory.setPrefWidth(100);
+                Date.setPromptText("Date");
+                Date.setPrefWidth(100);
+
+                homePageHBox.getChildren().addAll(
+                        searchChoiceBox,
+                        FirstCategory,
+                        SecondCategory,
+                        Date,
+                        SearchButton,
+                        LogOutButton);
+
+                break;
+            case "All the items posted by user X, such that all the comments are Excellent or good":
+                homePageHBox.setSpacing(375);
+                homePageHBox.getChildren().addAll(
+                        searchChoiceBox,
+                        searchField,
+                        LogOutButton);
+                break;
+            case "Most Posts On Certain Day":
+                homePageHBox.setSpacing(25);
+                TextField Day= new TextField();
+                Day.setPrefWidth(100);
+                Day.setPromptText("YYYY-MM-DD");
+                homePageHBox.getChildren().addAll(
+                        searchChoiceBox,
+                        Day,
+                        SearchButton,
+                        LogOutButton);
+                //CHeck if date is valid
+                break;
+            case "Favorites From User X and User Y":
+                homePageHBox.setSpacing(10);
+                TextField User1= new TextField();
+                TextField User2= new TextField();
+                User1.setPromptText("User 1");
+                User1.setPrefWidth(100);
+                User2.setPromptText("User 2");
+                User2.setPrefWidth(100);
+                homePageHBox.getChildren().addAll(
+                        searchChoiceBox,
+                        User1,
+                        User2,
+                        SearchButton,
+                        LogOutButton);
+                break;
+            case "users who never posted a Excellent review":
+                homePageHBox.setSpacing(375);
+                homePageHBox.getChildren().addAll(
+                        searchChoiceBox,
+                        LogOutButton);
+                NeverPostedExcellentReview();
+                break;
+            case "users who never posted a poor review":
+                homePageHBox.setSpacing(375);
+                homePageHBox.getChildren().addAll(
+                        searchChoiceBox,
+                        LogOutButton);
+                NeverPostedPoorReview();
+                break;
+            case "Only Poor Item Reviews":
+                homePageHBox.setSpacing(375);
+                homePageHBox.getChildren().addAll(
+                        searchChoiceBox,
+                        LogOutButton);
+                OnlyPostedPoorItems();
+                break;
+            case "No Poor Item Reviews":
+                homePageHBox.setSpacing(375);
+                homePageHBox.getChildren().addAll(
+                        searchChoiceBox,
+                        LogOutButton);
+                NoPoorItemReviews();
+                break;
+        }
+    }
+
+    private void NoPoorItemReviews() {
+    }
+
+    private void OnlyPostedPoorItems() {
+    }
+
+    private void NeverPostedPoorReview() {
+    }
+
+    private void NeverPostedExcellentReview() {
+    }
+
+    private void GetHighestPriceInEachCategory() {
+        try {
+            Connection connection = new UsersDatabase().getDatabaseConnection();
+            String query = "Select Category, Max(Price) From items Group By Category";
+            PreparedStatement ps = connection.prepareStatement(query);
+            ResultSet re = ps.executeQuery();
+            //populate the list view with the results
+
+        }
+        catch (SQLException e){
+            String.format("SQL Error: %s", e.getMessage());
+        }
+        //populate the list view with the results
+
+    }
+
+    public void clearHbox() {
+        homePageHBox.getChildren().clear();
+    }
+
+    public void clearListView(){
+        userSearchListView.getItems().clear();
     }
 }
