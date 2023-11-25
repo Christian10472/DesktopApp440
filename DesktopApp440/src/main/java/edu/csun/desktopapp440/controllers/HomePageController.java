@@ -232,35 +232,39 @@ public class HomePageController implements Initializable {
                 ps.setString(index++, preparedSearchItem);
             }
             ResultSet rs = ps.executeQuery();
+            populateWithItems(rs);
 
-            //Get all items and display them on Search Window
-            int i = 0;
-            if (!items.isEmpty()) {
-                items.clear();
-            }
-            while (rs.next()){
-                //Add items into an object for easy access to review page
-                items.add(new Items(
-                        rs.getInt("ItemId"),
-                        rs.getString("Username"),
-                        rs.getString("Title"),
-                        rs.getString("Description"),
-                        rs.getString("Category"),
-                        rs.getDouble("Price"),
-                        rs.getDate("DatePosted")
-                ));
-                //Only show id, title, Category, and Price on Search Table
-                String newRow = String.format("%-5s%-20s%-25s%-8s",
-                        items.get(i).getItemId(),
-                        items.get(i).getTitle(),
-                        items.get(i).getCategory(),
-                        items.get(i).getPrice());
-                userSearchListView.getItems().addAll(newRow);
-                i++;
-            }
         } catch (SQLException e) {
             throw new RuntimeException(
                     String.format("Error getting search query from database: %s",e.getMessage()));
+        }
+    }
+
+    public void populateWithItems(ResultSet rs) throws SQLException {
+        //Get all items and display them on Search Window
+        int i = 0;
+        if (!items.isEmpty()) {
+            items.clear();
+        }
+        while (rs.next()) {
+            //Add items into an object for easy access to review page
+            items.add(new Items(
+                    rs.getInt("ItemId"),
+                    rs.getString("Username"),
+                    rs.getString("Title"),
+                    rs.getString("Description"),
+                    rs.getString("Category"),
+                    rs.getDouble("Price"),
+                    rs.getDate("DatePosted")
+            ));
+            //Only show id, title, Category, and Price on Search Table
+            String newRow = String.format("%-5s%-20s%-25s%-8s",
+                    items.get(i).getItemId(),
+                    items.get(i).getTitle(),
+                    items.get(i).getCategory(),
+                    items.get(i).getPrice());
+            userSearchListView.getItems().addAll(newRow);
+            i++;
         }
     }
 
@@ -440,6 +444,90 @@ public class HomePageController implements Initializable {
         }
     }
 
+    private void favoriteFromUserXandY(){
+
+    }
+
+    private Boolean favoriteFromUserXandYInput(){
+        return true;
+    }
+    private boolean userXAllExcellentOrGoodInput() {
+        return true;
+    }
+
+    private void queryUserXAllExcellentOrGood(){
+
+    }
+
+    private boolean twoItemsSameDayInput() {
+        if(FirstCategory.getText().isEmpty()){
+            FirstCategory.setText(null);
+            FirstCategory.setPromptText("Invalid Input");
+            return false;
+        }
+
+        if(SecondCategory.getText().isEmpty()){
+            SecondCategory.setText(null);
+            SecondCategory.setPromptText("Invalid Input");
+            return false;
+        }
+
+        if(Dates.getValue()==null){
+            Dates.setPromptText("Pick A Date");
+            return false;
+        }
+        return true;
+    }
+
+    private void queryTwoItemsSameDay() {
+//        try{
+//            Connection connection = new UsersDatabase().getDatabaseConnection();
+//            String qurty =
+//        }
+//        catch (SQLException e){
+//            String.format("SQL Error: %s", e.getMessage());
+//        }
+    }
+
+
+    private boolean getMostPostedItemsInput(){
+        return true;
+    }
+
+    private void getMostPostedItems(){
+        try {
+            Connection connection = new UsersDatabase().getDatabaseConnection();
+            String query = "SELECT Username, DatePosted, COUNT(ItemId) AS NumberOfItemsPosted FROM items WHERE DatePosted = ? GROUP BY Username, DatePosted";
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setDate(1, java.sql.Date.valueOf(Dates.getValue()));
+            ResultSet rs = ps.executeQuery();
+
+            int max = 0;
+            while (rs.next()) {
+                //Set value to first count
+                if (rs.isFirst()) {
+                    max = rs.getInt("NumberOfItemsPosted");
+                }
+                //Check if count is growing smaller. Done so ties are printed
+                if(rs.getInt("NumberOfItemsPosted") < max){
+                    break;
+                }
+                //Print Users, Date, and count of items
+                String newRow = String.format("%-20s%-15s Items Posted:%-4d",
+                        rs.getString("Username"),
+                        rs.getDate("DatePosted"),
+                        rs.getInt("NumberOfItemsPosted"));
+                System.out.println(newRow);
+                userSearchListView.getItems().addAll(newRow);
+            }
+
+
+        }
+        catch (SQLException e){
+            String.format("SQL Error: %s", e.getMessage());
+        }
+    }
+
     private void NoPoorItemReviews() {
     }
 
@@ -455,17 +543,16 @@ public class HomePageController implements Initializable {
     private void GetHighestPriceInEachCategory() {
         try {
             Connection connection = new UsersDatabase().getDatabaseConnection();
-            String query = "Select Category, Max(Price) From items Group By Category";
+            String query = "SELECT * FROM items WHERE (Category, Price) IN (SELECT Category, MAX(Price) AS MaxPrice FROM items GROUP BY Category)";
             PreparedStatement ps = connection.prepareStatement(query);
-            ResultSet re = ps.executeQuery();
-            //populate the list view with the results
+            ResultSet rs = ps.executeQuery();
+
+            populateWithItems(rs);
 
         }
         catch (SQLException e){
             String.format("SQL Error: %s", e.getMessage());
         }
-        //populate the list view with the results
-
     }
 
     public void clearHbox() {
