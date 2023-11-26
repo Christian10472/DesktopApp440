@@ -116,14 +116,15 @@ public class AddReviewController implements Initializable {
             Connection dBConnection = new UsersDatabase().getDatabaseConnection();
             String sql =
                     "INSERT INTO " +
-                    "Reviews(ItemId,Reviewer,Quality,Review,DatePosted) " +
-                    "VALUES(?, ?, ?, ?, ?)";
+                    "Reviews(ItemId,Reviewer,Quality,Review,DatePosted,Username) " +
+                    "VALUES(?, ?, ?, ?, ?,?)";
             PreparedStatement ps = dBConnection.prepareStatement(sql);
             ps.setInt(1, item.getItemId());
             ps.setString(2, user.getUsername());
             ps.setString(3, conditionChoiceBox.getValue());
             ps.setString(4,  reviewTextArea.getText());
             ps.setDate(5, java.sql.Date.valueOf(LocalDate.now()));
+            ps.setString(6,item.getUsername());
             ps.executeUpdate();
 
             //Adds to Review Object

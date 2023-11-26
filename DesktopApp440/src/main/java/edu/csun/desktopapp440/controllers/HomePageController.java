@@ -26,6 +26,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -58,13 +59,13 @@ public class HomePageController implements Initializable {
     @FXML
     private ListView<String> userSearchListView;
     @FXML
-    private TextField searchField,FirstCategory,SecondCategory,
-                       User1,User2;
+    private TextField searchField,FirstCategory,SecondCategory,User1,User2;
     @FXML
     private Label statusLabel;
     @FXML
     private Button SearchButton,LogOutButton;
     private DatePicker Dates;
+
 
     private Users User;
     private final ArrayList<Items> items = new ArrayList<>();
@@ -195,6 +196,7 @@ public class HomePageController implements Initializable {
 
 
     public void onSearchClick(){
+        clearListView();
         switch (searchChoiceBox.getValue()) {
             case "Category":
                if (getUserSearch()) {
@@ -206,7 +208,7 @@ public class HomePageController implements Initializable {
                     queryTwoItemsSameDay();
                 break;
             case "All the items posted by user X, such that all the comments are Excellent or good":
-                if(userXAllExcellentOrGoodInput());
+                if(userXAllExcellentOrGoodInput())
                     queryUserXAllExcellentOrGood();
                 break;
             case "Most Posts On Certain Day":
@@ -403,10 +405,16 @@ public class HomePageController implements Initializable {
 
                 break;
             case "All the items posted by user X, such that all the comments are Excellent or good":
-                homePageHBox.setSpacing(375);
+                Region spacer1 = new Region();
+                spacer1.setPrefWidth(10);
+                Region spacer2 = new Region();
+                spacer2.setPrefWidth(50);
+                searchField.setPromptText("Enter Username");
                 homePageHBox.getChildren().addAll(
                         searchChoiceBox,
+                        spacer1,
                         searchField,
+                        spacer2,
                         LogOutButton);
                 break;
             case "Most Posts On Certain Day":
@@ -473,11 +481,40 @@ public class HomePageController implements Initializable {
         return true;
     }
     private boolean userXAllExcellentOrGoodInput() {
+        if (searchField.getText().isEmpty()) {
+            searchField.setText(null);
+            searchField.setPromptText("Invalid Input");
+            return false;
+        }
         return true;
     }
 
-    private void queryUserXAllExcellentOrGood(){
+    private void queryUserXAllExcellentOrGood() {
+        try {
+            boolean AllGood = true;
+            Connection connection = new UsersDatabase().getDatabaseConnection();
+            String query = "Select * from Reviews where Username = ?";
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1,searchField.getText());
+            ResultSet rs = ps.executeQuery();
 
+            while (rs.next()){
+                if(rs.getString("Quality").equals("fair") ||
+                   rs.getString("Quality").equals("poor")){
+                    AllGood = false;
+                    break;
+                }
+            }
+            if (AllGood){
+                query = "SELECT * from Items where Username = ?";
+                ps = connection.prepareStatement(query);
+                ps.setString(1,searchField.getText());
+                rs = ps.executeQuery();
+                populateWithItems(rs);
+            }
+        } catch (SQLException e) {
+            String.format("SQL Error: %s", e.getMessage());
+        }
     }
 
     private boolean twoItemsSameDayInput() {
@@ -501,13 +538,19 @@ public class HomePageController implements Initializable {
     }
 
     private void queryTwoItemsSameDay() {
-//        try{
-//            Connection connection = new UsersDatabase().getDatabaseConnection();
-//            String qurty =
-//        }
-//        catch (SQLException e){
-//            String.format("SQL Error: %s", e.getMessage());
-//        }
+        try{
+            Connection connection = new UsersDatabase().getDatabaseConnection();
+            String query = "SELECT * FROM items WHERE (Category LIKE ? OR Category LIKE ?) AND DatePosted = ? Order By Username;";
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1,"%"+FirstCategory.getText()+"%");
+            ps.setString(2,"%"+SecondCategory.getText()+"%");
+            ps.setDate(3, java.sql.Date.valueOf(Dates.getValue()));
+            ResultSet rs = ps.executeQuery();
+            populateWithItems(rs);
+        }
+        catch (SQLException e){
+            String.format("SQL Error: %s", e.getMessage());
+        }
     }
 
 
