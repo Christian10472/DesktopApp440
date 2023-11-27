@@ -39,12 +39,12 @@ import java.util.logging.Logger;
 
 public class HomePageController implements Initializable {
 
-    /*
+    /**
      * Log variable
      */
     private static final Logger log;
 
-    /*
+    /**
      * Logger for debugging
      */
     static {
@@ -77,10 +77,11 @@ public class HomePageController implements Initializable {
             "All the items posted by user X, such that all the comments are Excellent or good",
             "Most Posts On Certain Day",
             "Favorites From User X and User Y",
-            "users who never posted a Excellent review",
-            "users who never posted a poor review",
+            "Users who never posted a Excellent item",
+            "Users who never posted a poor review",
             "Only Poor Item Reviews",
-            "No Poor Item Reviews",};
+            "No Poor Item Reviews"};
+    private boolean clickable = true;
 
     public void initialiseHomepage(Users user) {
         User = user;
@@ -216,8 +217,8 @@ public class HomePageController implements Initializable {
                     getMostPostedItems();
                 break;
             case "Favorites From User X and User Y":
-                if(favoriteFromUserXandYInput())
-                    favoriteFromUserXandY();
+                if(favoriteFromUserXAndYInput())
+                    queryFavoriteFromUserXAndY();
                 break;
 
        }
@@ -265,7 +266,12 @@ public class HomePageController implements Initializable {
         }
     }
 
+
+    //Populate Chart with Items (Only done if user can click on item to go to review GUI)
     public void populateWithItems(ResultSet rs) throws SQLException {
+        //Variable to allow table to be clicked
+        clickable = true;
+
         //Get all items and display them on Search Window
         int i = 0;
         if (!items.isEmpty()) {
@@ -324,6 +330,9 @@ public class HomePageController implements Initializable {
         userSearchListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<>() {
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                if (!clickable) {
+                    return;
+                }
                 //Get the row index to find which index in items array user chose
                 int selectedRowIndex = userSearchListView.getSelectionModel().getSelectedIndex();
 
@@ -360,41 +369,42 @@ public class HomePageController implements Initializable {
         onSearchClick();
     }
 
+    /**
+     * Work on Phase 3 of the project
+     */
+
+    //Update Search Field when DropDown Menu Item is selected
     private void updateSearchField(ActionEvent event) {
         clearHbox();
         clearListView();
         switch (searchChoiceBox.getValue()) {
-            case "Category":
+            case "Category" -> {
                 homePageHBox.setSpacing(10);
                 homePageHBox.getChildren().addAll(
                         searchChoiceBox,
                         searchField,
                         SearchButton,
                         LogOutButton);
-
                 searchField.setPromptText("Enter Category");
-                break;
-            case "Highest Price in Each Category":
+            }
+            case "Highest Price in Each Category" -> {
                 homePageHBox.setSpacing(375);
                 homePageHBox.getChildren().addAll(
                         searchChoiceBox,
                         LogOutButton);
-
                 GetHighestPriceInEachCategory();
-                break;
-            case "2 items Same Day Different Categories":
+            }
+            case "2 items Same Day Different Categories" -> {
                 homePageHBox.setSpacing(10);
-                FirstCategory= new TextField();
-                SecondCategory= new TextField();
+                FirstCategory = new TextField();
+                SecondCategory = new TextField();
                 Dates = new DatePicker();
-
                 FirstCategory.setPromptText("Category 1");
                 FirstCategory.setPrefWidth(100);
                 SecondCategory.setPromptText("Category 2");
                 SecondCategory.setPrefWidth(100);
                 Dates.setPromptText("Date");
                 Dates.setPrefWidth(100);
-
                 homePageHBox.getChildren().addAll(
                         searchChoiceBox,
                         FirstCategory,
@@ -402,9 +412,8 @@ public class HomePageController implements Initializable {
                         Dates,
                         SearchButton,
                         LogOutButton);
-
-                break;
-            case "All the items posted by user X, such that all the comments are Excellent or good":
+            }
+            case "All the items posted by user X, such that all the comments are Excellent or good" -> {
                 Region spacer1 = new Region();
                 spacer1.setPrefWidth(10);
                 Region spacer2 = new Region();
@@ -416,8 +425,8 @@ public class HomePageController implements Initializable {
                         searchField,
                         spacer2,
                         LogOutButton);
-                break;
-            case "Most Posts On Certain Day":
+            }
+            case "Most Posts On Certain Day" -> {
                 homePageHBox.setSpacing(25);
                 Dates = new DatePicker();
                 Dates.setPromptText("Enter a Date");
@@ -426,11 +435,11 @@ public class HomePageController implements Initializable {
                         Dates,
                         SearchButton,
                         LogOutButton);
-                break;
-            case "Favorites From User X and User Y":
+            }
+            case "Favorites From User X and User Y" -> {
                 homePageHBox.setSpacing(10);
-                User1= new TextField();
-                User2= new TextField();
+                User1 = new TextField();
+                User2 = new TextField();
                 User1.setPromptText("User 1");
                 User1.setPrefWidth(100);
                 User2.setPromptText("User 2");
@@ -441,35 +450,35 @@ public class HomePageController implements Initializable {
                         User2,
                         SearchButton,
                         LogOutButton);
-                break;
-            case "users who never posted a Excellent review":
+            }
+            case "Users who never posted a Excellent item" -> {
                 homePageHBox.setSpacing(375);
                 homePageHBox.getChildren().addAll(
                         searchChoiceBox,
                         LogOutButton);
-                NeverPostedExcellentReview();
-                break;
-            case "users who never posted a poor review":
+                NeverPostedExcellentItem();
+            }
+            case "Users who never posted a poor review" -> {
                 homePageHBox.setSpacing(375);
                 homePageHBox.getChildren().addAll(
                         searchChoiceBox,
                         LogOutButton);
                 NeverPostedPoorReview();
-                break;
-            case "Only Poor Item Reviews":
+            }
+            case "Only Poor Item Reviews" -> {
                 homePageHBox.setSpacing(375);
                 homePageHBox.getChildren().addAll(
                         searchChoiceBox,
                         LogOutButton);
-                OnlyPostedPoorItems();
-                break;
-            case "No Poor Item Reviews":
+                OnlyPostedPoorReviews();
+            }
+            case "No Poor Item Reviews" -> {
                 homePageHBox.setSpacing(375);
                 homePageHBox.getChildren().addAll(
                         searchChoiceBox,
                         LogOutButton);
                 NoPoorItemReviews();
-                break;
+            }
         }
     }
 
@@ -477,7 +486,8 @@ public class HomePageController implements Initializable {
 
     }
 
-    private Boolean favoriteFromUserXandYInput(){
+    //Requirement for #5 checks the input
+    private boolean favoriteFromUserXAndYInput(){
         return true;
     }
     private boolean userXAllExcellentOrGoodInput() {
@@ -524,95 +534,49 @@ public class HomePageController implements Initializable {
             return false;
         }
 
-        if(SecondCategory.getText().isEmpty()){
-            SecondCategory.setText(null);
-            SecondCategory.setPromptText("Invalid Input");
-            return false;
-        }
-
-        if(Dates.getValue()==null){
-            Dates.setPromptText("Pick A Date");
-            return false;
-        }
-        return true;
-    }
-
-    private void queryTwoItemsSameDay() {
+    //Requirement for #7
+    private void NeverPostedPoorReview() {
+        clickable = false;
         try{
             Connection connection = new UsersDatabase().getDatabaseConnection();
-            String query = "SELECT * FROM items WHERE (Category LIKE ? OR Category LIKE ?) AND DatePosted = ? Order By Username;";
+            String query = "SELECT DISTINCT reviewer " +
+                    "FROM reviews review1 " +
+                    "WHERE NOT EXISTS(" +
+                    "SELECT * " +
+                    "FROM reviews review2 " +
+                    "WHERE review1.reviewer = review2.reviewer " +
+                    "AND review2.Quality = 'poor')";
             PreparedStatement ps = connection.prepareStatement(query);
-            ps.setString(1,"%"+FirstCategory.getText()+"%");
-            ps.setString(2,"%"+SecondCategory.getText()+"%");
-            ps.setDate(3, java.sql.Date.valueOf(Dates.getValue()));
-            ResultSet rs = ps.executeQuery();
-            populateWithItems(rs);
-        }
-        catch (SQLException e){
-            String.format("SQL Error: %s", e.getMessage());
-        }
-    }
-
-
-    private boolean getMostPostedItemsInput(){
-        return true;
-    }
-
-    private void getMostPostedItems(){
-        try {
-            Connection connection = new UsersDatabase().getDatabaseConnection();
-            String query = "SELECT Username, DatePosted, COUNT(ItemId) AS NumberOfItemsPosted FROM items WHERE DatePosted = ? GROUP BY Username, DatePosted";
-            PreparedStatement ps = connection.prepareStatement(query);
-            ps.setDate(1, java.sql.Date.valueOf(Dates.getValue()));
             ResultSet rs = ps.executeQuery();
 
-            int max = 0;
             while (rs.next()) {
-                //Set value to first count
-                if (rs.isFirst()) {
-                    max = rs.getInt("NumberOfItemsPosted");
-                }
-                //Check if count is growing smaller. Done so ties are printed
-                if(rs.getInt("NumberOfItemsPosted") < max){
-                    break;
-                }
-                //Print Users, Date, and count of items
-                String newRow = String.format("%-20s%-15s Items Posted:%-4d",
-                        rs.getString("Username"),
-                        rs.getDate("DatePosted"),
-                        rs.getInt("NumberOfItemsPosted"));
-                System.out.println(newRow);
-                userSearchListView.getItems().addAll(newRow);
+                userSearchListView.getItems().addAll(rs.getString("Reviewer"));
             }
-
-
         }
         catch (SQLException e){
             String.format("SQL Error: %s", e.getMessage());
         }
     }
 
-    private void NoPoorItemReviews() {
-    }
-
-    private void OnlyPostedPoorItems() {
-    }
-
-    private void NeverPostedPoorReview() {
-    }
-
-    private void NeverPostedExcellentReview() {
-    }
-
-    private void GetHighestPriceInEachCategory() {
+    //Requirement #8
+    private void OnlyPostedPoorReviews() {
+        clickable = false;
         try {
             Connection connection = new UsersDatabase().getDatabaseConnection();
-            String query = "SELECT * FROM items WHERE (Category, Price) IN (SELECT Category, MAX(Price) AS MaxPrice FROM items GROUP BY Category)";
+            String query = "SELECT DISTINCT reviewer " +
+                    "FROM reviews review1 " +
+                    "WHERE NOT EXISTS(" +
+                    "SELECT * " +
+                    "FROM reviews review2 " +
+                    "WHERE review1.reviewer = review2.reviewer " +
+                    "AND review2.Quality != 'poor')" +
+                    "AND review1.Quality = 'poor'";
             PreparedStatement ps = connection.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
 
-            populateWithItems(rs);
-
+            while (rs.next()) {
+                userSearchListView.getItems().addAll(rs.getString("Reviewer"));
+            }
         }
         catch (SQLException e){
             String.format("SQL Error: %s", e.getMessage());
