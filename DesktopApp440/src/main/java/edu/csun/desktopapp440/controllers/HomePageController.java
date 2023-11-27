@@ -174,6 +174,7 @@ public class HomePageController implements Initializable {
         }
         return true;
     }
+
     public void initializeOrReinitializeTables(Connection dbConnection, ResultSet resultSet) {
         final String reInitializeTables = "CALL ReinitializeTables";
         final String initializeTables = "CALL InitializeTables";
@@ -194,7 +195,6 @@ public class HomePageController implements Initializable {
                     String.format("SQL Error: %s", e.getMessage()));
         }
     }
-
 
     public void onSearchClick(){
         clearListView();
@@ -482,14 +482,61 @@ public class HomePageController implements Initializable {
         }
     }
 
-    private void favoriteFromUserXandY(){
+    //Requirement for #1 Gets the highest priced item in each category
+    private void GetHighestPriceInEachCategory() {
+        try {
+            Connection connection = new UsersDatabase().getDatabaseConnection();
+            String query = "SELECT * FROM items WHERE (Category, Price) IN (SELECT Category, MAX(Price) AS MaxPrice FROM items GROUP BY Category)";
+            PreparedStatement ps = connection.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
 
+            populateWithItems(rs);
+
+        }
+        catch (SQLException e){
+            String.format("SQL Error: %s", e.getMessage());
+        }
     }
 
-    //Requirement for #5 checks the input
-    private boolean favoriteFromUserXAndYInput(){
+    //Requirement for #2 checks if the input is populated
+    private boolean twoItemsSameDayInput() {
+        if(FirstCategory.getText().isEmpty()){
+            FirstCategory.setText(null);
+            FirstCategory.setPromptText("Invalid Input");
+            return false;
+        }
+
+        if(SecondCategory.getText().isEmpty()){
+            SecondCategory.setText(null);
+            SecondCategory.setPromptText("Invalid Input");
+            return false;
+        }
+
+        if(Dates.getValue()==null){
+            Dates.setPromptText("Pick A Date");
+            return false;
+        }
         return true;
     }
+
+    //Requirement for #2 runs the query gets the users who posted into 2 different categories x and y on the same day z
+    private void queryTwoItemsSameDay() {
+        try{
+            Connection connection = new UsersDatabase().getDatabaseConnection();
+            String query = "SELECT * FROM items WHERE (Category LIKE ? OR Category LIKE ?) AND DatePosted = ? Order By Username;";
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1,"%"+FirstCategory.getText()+"%");
+            ps.setString(2,"%"+SecondCategory.getText()+"%");
+            ps.setDate(3, java.sql.Date.valueOf(Dates.getValue()));
+            ResultSet rs = ps.executeQuery();
+            populateWithItems(rs);
+        }
+        catch (SQLException e){
+            String.format("SQL Error: %s", e.getMessage());
+        }
+    }
+
+    //Requirement for #3 checks to see if the input is valid
     private boolean userXAllExcellentOrGoodInput() {
         if (searchField.getText().isEmpty()) {
             searchField.setText(null);
@@ -499,6 +546,7 @@ public class HomePageController implements Initializable {
         return true;
     }
 
+    //Requirement for #3 runs the query and gets all users who have items with only excellent or good reviews
     private void queryUserXAllExcellentOrGood() {
         try {
             boolean AllGood = true;
@@ -510,7 +558,7 @@ public class HomePageController implements Initializable {
 
             while (rs.next()){
                 if(rs.getString("Quality").equals("fair") ||
-                   rs.getString("Quality").equals("poor")){
+                        rs.getString("Quality").equals("poor")){
                     AllGood = false;
                     break;
                 }
@@ -527,12 +575,69 @@ public class HomePageController implements Initializable {
         }
     }
 
-    private boolean twoItemsSameDayInput() {
-        if(FirstCategory.getText().isEmpty()){
-            FirstCategory.setText(null);
-            FirstCategory.setPromptText("Invalid Input");
+ //Method for Number 4 Requirement checks if input is valid
+    private boolean getMostPostedItemsInput(){
+        if(Dates.getValue()==null){
+            Dates.setPromptText("Pick A Date");
             return false;
         }
+        return true;
+    }
+
+    //Method for Number 4 Requirement to search database
+    private void getMostPostedItems(){
+        clickable = false;
+        System.out.println(clickable);
+        try {
+            Connection connection = new UsersDatabase().getDatabaseConnection();
+            String query = "SELECT Username, DatePosted, COUNT(ItemId) AS NumberOfItemsPosted " +
+                    "FROM items " +
+                    "WHERE DatePosted = ? " +
+                    "GROUP BY Username, DatePosted " +
+                    "ORDER BY NumberOfItemsPosted DESC ";
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setDate(1, java.sql.Date.valueOf(Dates.getValue()));
+            ResultSet rs = ps.executeQuery();
+
+            int max = 0;
+            while (rs.next()) {
+                //Set value to first count
+                if (rs.isFirst()) {
+                    max = rs.getInt("NumberOfItemsPosted");
+                }
+                //Check if count is growing smaller. Done so ties are printed
+                if(rs.getInt("NumberOfItemsPosted") < max){
+                    break;
+                }
+                //Print Users, Date, and count of items
+                String newRow = String.format("%-20s%-15s Items Posted:%-4d",
+                        rs.getString("Username"),
+                        rs.getDate("DatePosted"),
+                        rs.getInt("NumberOfItemsPosted"));
+                System.out.println(newRow);
+                userSearchListView.getItems().addAll(newRow);
+            }
+
+
+        }
+        catch (SQLException e){
+            String.format("SQL Error: %s", e.getMessage());
+        }
+    }
+
+    //Requirement #5 runs the query
+    private void queryFavoriteFromUserXAndY(){
+
+    }
+
+    //Requirement for #5 checks the input
+    private boolean favoriteFromUserXAndYInput(){
+        return true;
+    }
+
+    //Requirement for #6 runs the query no need to check input
+    private void NeverPostedExcellentItem() {
+    }
 
     //Requirement for #7
     private void NeverPostedPoorReview() {
@@ -582,6 +687,11 @@ public class HomePageController implements Initializable {
             String.format("SQL Error: %s", e.getMessage());
         }
     }
+
+    //Requirement for #9
+    private void NoPoorItemReviews() {
+    }
+
 
     public void clearHbox() {
         homePageHBox.getChildren().clear();
