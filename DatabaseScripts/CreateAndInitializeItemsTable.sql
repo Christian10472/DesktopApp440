@@ -79,6 +79,7 @@ Reviewer VARCHAR(255) NOT NULL,
 Quality VARCHAR(255) NOT NULL,
 Review TEXT,
 DatePosted DATE NOT NULL,
+Owner VARCHAR(255) NOT NULL, 
 CONSTRAINT Pk_Items_ReviewId PRIMARY KEY(ReviewId),
 CONSTRAINT Fk_Items_ItemId FOREIGN KEY(ItemId) REFERENCES items(ItemId),
 CONSTRAINT Fk_Items_Reviewer FOREIGN KEY(Reviewer) REFERENCES users(Username)
@@ -100,7 +101,8 @@ ItemId INT NOT NULL,
 Reviewer VARCHAR(255) NOT NULL,
 Quality VARCHAR(255) NOT NULL,
 Review TEXT,
-DatePosted DATE NOT NULL,
+DatePosted DATE NOT NULL, 
+Owner VARCHAR(255) NOT NULL, 
 CONSTRAINT Pk_Items_ReviewId PRIMARY KEY(ReviewId),
 CONSTRAINT Fk_Items_ItemId FOREIGN KEY(ItemId) REFERENCES items(ItemId),
 CONSTRAINT Fk_Items_Reviewer FOREIGN KEY(Reviewer) REFERENCES users(Username)
@@ -160,6 +162,78 @@ Email
   DEALLOCATE PREPARE stmt;
 END$$
 
+
+DELIMITER $$ 
+CREATE PROCEDURE InitializeTestUser3Input()
+BEGIN
+  SET @sql = CONCAT('INSERT INTO ', 'users', ' (
+Username,
+Password,
+FirstName,
+LastName, 
+Email
+)', 
+' VALUES ', 
+'(
+''TestUser3'',
+''Comp440User2023'',
+''Test'',
+''User3'',
+''Test.User3@my.csun.edu''
+)');
+  PREPARE stmt FROM @sql;
+  EXECUTE stmt;
+  DEALLOCATE PREPARE stmt;
+END$$
+
+
+DELIMITER $$ 
+CREATE PROCEDURE InitializeTestUser4Input()
+BEGIN
+  SET @sql = CONCAT('INSERT INTO ', 'users', ' (
+Username,
+Password,
+FirstName,
+LastName, 
+Email
+)', 
+' VALUES ', 
+'(
+''TestUser4'',
+''Comp440User2023'',
+''Test'',
+''User4'',
+''Test.User4@my.csun.edu''
+)');
+  PREPARE stmt FROM @sql;
+  EXECUTE stmt;
+  DEALLOCATE PREPARE stmt;
+END$$
+
+
+DELIMITER $$ 
+CREATE PROCEDURE InitializeTestUser5Input()
+BEGIN
+  SET @sql = CONCAT('INSERT INTO ', 'users', ' (
+Username,
+Password,
+FirstName,
+LastName, 
+Email
+)', 
+' VALUES ', 
+'(
+''TestUser5'',
+''Comp440User2023'',
+''Test'',
+''User5'',
+''Test.User5@my.csun.edu''
+)');
+  PREPARE stmt FROM @sql;
+  EXECUTE stmt;
+  DEALLOCATE PREPARE stmt;
+END$$
+
 DELIMITER ; 
 
 DELIMITER $$ 
@@ -170,7 +244,8 @@ ItemId,
 Reviewer,
 Quality,
 Review,
-DatePosted
+DatePosted,
+Owner
 )', 
 ' VALUES ', 
 '(
@@ -178,7 +253,8 @@ DatePosted
 ''TestUser2'',
 ''excellent'',
 ''Item1 is excellent'',
-''2023-1-1''
+''2023-1-1'',
+''TestUser1''
 )');
   PREPARE stmt FROM @sql;
   EXECUTE stmt;
@@ -195,7 +271,8 @@ ItemId,
 Reviewer,
 Quality,
 Review,
-DatePosted
+DatePosted,
+Owner
 )', 
 ' VALUES ', 
 '(
@@ -203,7 +280,8 @@ DatePosted
 ''TestUser2'',
 ''good'',
 ''Item2 is good'',
-''2023-1-2''
+''2023-1-2'',
+''TestUser1''
 )');
   PREPARE stmt FROM @sql;
   EXECUTE stmt;
@@ -220,7 +298,8 @@ ItemId,
 Reviewer,
 Quality,
 Review,
-DatePosted
+DatePosted,
+Owner
 )', 
 ' VALUES ', 
 '(
@@ -228,7 +307,8 @@ DatePosted
 ''TestUser2'',
 ''fair'',
 ''Item3 is fair'',
-''2023-1-3''
+''2023-1-3'',
+''TestUser1''
 )');
   PREPARE stmt FROM @sql;
   EXECUTE stmt;
@@ -245,7 +325,8 @@ ItemId,
 Reviewer,
 Quality,
 Review,
-DatePosted
+DatePosted,
+Owner
 )', 
 ' VALUES ', 
 '(
@@ -253,7 +334,8 @@ DatePosted
 ''TestUser2'',
 ''poor'',
 ''Item4 is poor'',
-''2023-1-4''
+''2023-1-4'',
+''TestUser1''
 )');
   PREPARE stmt FROM @sql;
   EXECUTE stmt;
@@ -270,7 +352,8 @@ ItemId,
 Reviewer,
 Quality,
 Review,
-DatePosted
+DatePosted,
+Owner
 )', 
 ' VALUES ', 
 '(
@@ -278,7 +361,8 @@ DatePosted
 ''TestUser2'',
 ''good'',
 ''Item5 is excellent again'',
-''2023-1-5''
+''2023-1-5'',
+''TestUser1''
 )');
   PREPARE stmt FROM @sql;
   EXECUTE stmt;
@@ -430,8 +514,14 @@ BEGIN
   DROP TABLE items;
   DELETE FROM users WHERE Username='TestUser';
   DELETE FROM users WHERE Username='TestUser2';
+  DELETE FROM users WHERE Username='TestUser3';
+  DELETE FROM users WHERE Username='TestUser4';
+  DELETE FROM users WHERE Username='TestUser5';
   CALL InitializeTestUserInput;
   CALL InitializeTestUser2Input;
+  CALL InitializeTestUser3Input;
+  CALL InitializeTestUser4Input;
+  CALL InitializeTestUser5Input;
   CALL InitializeItemsTable;
   CALL InitializeItemInputs1; 
   CALL InitializeItemInputs2;
@@ -452,6 +542,9 @@ CREATE PROCEDURE InitializeTables()
 BEGIN
   CALL InitializeTestUserInput;
   CALL InitializeTestUser2Input;
+  CALL InitializeTestUser3Input;
+  CALL InitializeTestUser4Input;
+  CALL InitializeTestUser5Input;
   CALL InitializeItemsTable;
   CALL InitializeItemInputs1; 
   CALL InitializeItemInputs2;
@@ -486,6 +579,9 @@ DROP PROCEDURE InitializeReviewInputs4;
 DROP PROCEDURE InitializeReviewInputs5;
 DROP PROCEDURE InitializeTestUserInput; 
 DROP PROCEDURE InitializeTestUser2Input;
+DROP PROCEDURE InitializeTestUser3Input;
+DROP PROCEDURE InitializeTestUser4Input;
+DROP PROCEDURE InitializeTestUser5Input;
 
 
 -- Call procedures
@@ -507,7 +603,9 @@ CALL ReinitializeTables;
 CALL InitializeTables;
 CALL InitializeTestUserInput;
 CALL InitializeTestUser2Input;
-
+CALL InitializeTestUser3Input;
+CALL InitializeTestUser4Input;
+CALL InitializeTestUser5Input;
 
 -- Check if items table exist
 SELECT count(*)
@@ -524,3 +622,9 @@ SELECT * FROM Users;
 SELECT * FROM items;
 
 SELECT * FROM reviews;
+
+DELETE FROM users WHERE Username='TestUser';
+DELETE FROM users WHERE Username='TestUser2';
+DELETE FROM users WHERE Username='TestUser3';
+DELETE FROM users WHERE Username='TestUser4';
+DELETE FROM users WHERE Username='TestUser5';
