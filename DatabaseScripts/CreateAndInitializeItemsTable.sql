@@ -27,6 +27,24 @@ DROP TABLE reviews;
 
 -- Create procedures
 DELIMITER $$ 
+CREATE PROCEDURE InitializeFavoritesTable()
+BEGIN
+  SET @sql = CONCAT('CREATE TABLE ', 'favorites', ' (
+ItemId INT AUTO_INCREMENT NOT NULL,
+Username VARCHAR(255) NOT NULL,
+FavoriteUser varchar(255) NOT NULL,
+CONSTRAINT Pk_Favorite_ItemId PRIMARY KEY(ItemId),
+CONSTRAINT Fk_Favorite_Username FOREIGN KEY(Username) REFERENCES users(Username)
+)');
+  PREPARE stmt FROM @sql;
+  EXECUTE stmt;
+  DEALLOCATE PREPARE stmt;
+END$$
+
+DELIMITER ; 
+
+
+DELIMITER $$ 
 CREATE PROCEDURE InitializeItemsTable()
 BEGIN
   SET @sql = CONCAT('CREATE TABLE ', 'Items', ' (
@@ -370,7 +388,115 @@ Owner
 END$$
 
 DELIMITER ; 
+
+DELIMITER $$ 
+CREATE PROCEDURE InitializeFavoriteInputs()
+BEGIN
+  SET @sql = CONCAT('INSERT INTO ', 'Favorites', ' (
+ItemId,
+Username,
+FavoriteUser
+)', 
+' VALUES ', 
+'(
+1,
+''TestUser'',
+''TestUser2''
+)');
+  PREPARE stmt FROM @sql;
+  EXECUTE stmt;
+  DEALLOCATE PREPARE stmt;
+END$$
+
+DELIMITER ;
  
+
+DELIMITER $$ 
+CREATE PROCEDURE InitializeFavoriteInputs2()
+BEGIN
+  SET @sql = CONCAT('INSERT INTO ', 'Favorites', ' (
+ItemId,
+Username,
+FavoriteUser
+)', 
+' VALUES ', 
+'(
+2,
+''TestUser'',
+''TestUser3''
+)');
+  PREPARE stmt FROM @sql;
+  EXECUTE stmt;
+  DEALLOCATE PREPARE stmt;
+END$$
+
+DELIMITER ;
+ 
+
+DELIMITER $$ 
+CREATE PROCEDURE InitializeFavoriteInputs3()
+BEGIN
+  SET @sql = CONCAT('INSERT INTO ', 'Favorites', ' (
+ItemId,
+Username,
+FavoriteUser
+)', 
+' VALUES ', 
+'(
+3,
+''TestUser'',
+''TestUser4''
+)');
+  PREPARE stmt FROM @sql;
+  EXECUTE stmt;
+  DEALLOCATE PREPARE stmt;
+END$$
+
+DELIMITER ;
+ 
+
+DELIMITER $$ 
+CREATE PROCEDURE InitializeFavoriteInputs4()
+BEGIN
+  SET @sql = CONCAT('INSERT INTO ', 'Favorites', ' (
+ItemId,
+Username,
+FavoriteUser
+)', 
+' VALUES ', 
+'(
+4,
+''TestUser'',
+''TestUser5''
+)');
+  PREPARE stmt FROM @sql;
+  EXECUTE stmt;
+  DEALLOCATE PREPARE stmt;
+END$$
+
+DELIMITER ;
+ 
+
+DELIMITER $$ 
+CREATE PROCEDURE InitializeFavoriteInputs5()
+BEGIN
+  SET @sql = CONCAT('INSERT INTO ', 'Favorites', ' (
+ItemId,
+Username,
+FavoriteUser
+)', 
+' VALUES ', 
+'(
+5,
+''TestUser2'',
+''TestUser5''
+)');
+  PREPARE stmt FROM @sql;
+  EXECUTE stmt;
+  DEALLOCATE PREPARE stmt;
+END$$
+
+DELIMITER ;
 
 DELIMITER $$ 
 CREATE PROCEDURE InitializeItemInputs1()
@@ -512,6 +638,7 @@ CREATE PROCEDURE ReinitializeTables()
 BEGIN
   DROP TABLE reviews;
   DROP TABLE items;
+  DROP TABLE favorites;
   DELETE FROM users WHERE Username='TestUser';
   DELETE FROM users WHERE Username='TestUser2';
   DELETE FROM users WHERE Username='TestUser3';
@@ -534,6 +661,12 @@ BEGIN
   CALL InitializeReviewInputs3;
   CALL InitializeReviewInputs4;
   CALL InitializeReviewInputs5;
+  CALL InitializeFavoritesTable;
+  CALL InitializeFavoriteInputs;
+  CALL InitializeFavoriteInputs2;
+  CALL InitializeFavoriteInputs3;
+  CALL InitializeFavoriteInputs4;
+  CALL InitializeFavoriteInputs5;
 END$$
 DELIMITER ;
 
@@ -557,6 +690,12 @@ BEGIN
   CALL InitializeReviewInputs3;
   CALL InitializeReviewInputs4;
   CALL InitializeReviewInputs5;
+  CALL InitializeFavoritesTable;
+  CALL InitializeFavoriteInputs;
+  CALL InitializeFavoriteInputs2;
+  CALL InitializeFavoriteInputs3;
+  CALL InitializeFavoriteInputs4;
+  CALL InitializeFavoriteInputs5;
 END$$
 DELIMITER ;
 
@@ -582,6 +721,12 @@ DROP PROCEDURE InitializeTestUser2Input;
 DROP PROCEDURE InitializeTestUser3Input;
 DROP PROCEDURE InitializeTestUser4Input;
 DROP PROCEDURE InitializeTestUser5Input;
+DROP PROCEDURE InitializeFavoritesTable;
+DROP PROCEDURE InitializeFavoriteInputs;
+DROP PROCEDURE InitializeFavoriteInputs2;
+DROP PROCEDURE InitializeFavoriteInputs3;
+DROP PROCEDURE InitializeFavoriteInputs4;
+DROP PROCEDURE InitializeFavoriteInputs5;
 
 
 -- Call procedures
@@ -606,6 +751,12 @@ CALL InitializeTestUser2Input;
 CALL InitializeTestUser3Input;
 CALL InitializeTestUser4Input;
 CALL InitializeTestUser5Input;
+CALL InitializeFavoritesTable;
+CALL InitializeFavoriteInputs;
+CALL InitializeFavoriteInputs2;
+CALL InitializeFavoriteInputs3;
+CALL InitializeFavoriteInputs4;
+CALL InitializeFavoriteInputs5;
 
 -- Check if items table exist
 SELECT count(*)
@@ -614,6 +765,7 @@ WHERE table_schema = 'comp440database'
 AND table_name = 'items';
 
 -- Additional scripts
+DROP TABLE favorites;
 DROP TABLE reviews;
 DROP TABLE items;
 
