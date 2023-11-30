@@ -780,3 +780,15 @@ DELETE FROM users WHERE Username='TestUser2';
 DELETE FROM users WHERE Username='TestUser3';
 DELETE FROM users WHERE Username='TestUser4';
 DELETE FROM users WHERE Username='TestUser5';
+
+-- select emp1.employee_name, emp2.employee_name, emp1.task
+-- from tasks emp1
+-- inner join task emp2
+-- on emp1.employee_name > emp2.employee_name
+-- and emp1.task = emp2.task
+
+SELECT user1.FavoriteUser 
+FROM favorites AS user1
+INNER JOIN favorites AS user2
+ON user1.Username > user2.Username 
+AND user1.FavoriteUser = user2.FavoriteUser; 
