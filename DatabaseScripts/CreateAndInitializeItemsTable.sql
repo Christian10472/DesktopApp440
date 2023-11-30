@@ -23,9 +23,32 @@ CONSTRAINT Fk_Items_ItemId FOREIGN KEY(ItemId) REFERENCES items(ItemId),
 CONSTRAINT Fk_Items_Reviewer FOREIGN KEY(Reviewer) REFERENCES users(Username)
 );
 
+CREATE TABLE TwoFavoriteUsers AS (SELECT fav1.Username AS Username1, fav2.Username AS Username2, fav1.FavoriteUser 
+FROM favorites AS fav1
+INNER JOIN favorites AS fav2
+ON fav1.Username > fav2.Username 
+AND fav1.FavoriteUser = fav2.FavoriteUser);
+
 DROP TABLE reviews;
 
 -- Create procedures
+
+DELIMITER $$
+CREATE PROCEDURE InitializeTwoFavoriteUsersTable()
+BEGIN
+  SET @sql = CONCAT('CREATE TABLE ', 'TwoFavoriteUsers', ' AS (
+SELECT fav1.Username AS Username1, fav2.Username AS Username2, fav1.FavoriteUser 
+FROM favorites AS fav1 
+INNER JOIN favorites AS fav2 
+ON fav1.Username > fav2.Username 
+AND fav1.FavoriteUser = fav2.FavoriteUser)');
+  PREPARE stmt FROM @sql;
+  EXECUTE stmt;
+  DEALLOCATE PREPARE stmt;
+END$$
+
+DELIMITER ;
+
 DELIMITER $$ 
 CREATE PROCEDURE InitializeFavoritesTable()
 BEGIN
@@ -272,7 +295,7 @@ Owner
 ''excellent'',
 ''Item1 is excellent'',
 ''2023-1-1'',
-''TestUser1''
+''TestUser''
 )');
   PREPARE stmt FROM @sql;
   EXECUTE stmt;
@@ -299,7 +322,7 @@ Owner
 ''good'',
 ''Item2 is good'',
 ''2023-1-2'',
-''TestUser1''
+''TestUser''
 )');
   PREPARE stmt FROM @sql;
   EXECUTE stmt;
@@ -326,7 +349,7 @@ Owner
 ''fair'',
 ''Item3 is fair'',
 ''2023-1-3'',
-''TestUser1''
+''TestUser''
 )');
   PREPARE stmt FROM @sql;
   EXECUTE stmt;
@@ -353,7 +376,7 @@ Owner
 ''poor'',
 ''Item4 is poor'',
 ''2023-1-4'',
-''TestUser1''
+''TestUser''
 )');
   PREPARE stmt FROM @sql;
   EXECUTE stmt;
@@ -380,7 +403,7 @@ Owner
 ''good'',
 ''Item5 is excellent again'',
 ''2023-1-5'',
-''TestUser1''
+''TestUser''
 )');
   PREPARE stmt FROM @sql;
   EXECUTE stmt;
@@ -639,6 +662,7 @@ BEGIN
   DROP TABLE reviews;
   DROP TABLE items;
   DROP TABLE favorites;
+  DROP TABLE twofavoriteusers;
   DELETE FROM users WHERE Username='TestUser';
   DELETE FROM users WHERE Username='TestUser2';
   DELETE FROM users WHERE Username='TestUser3';
@@ -667,6 +691,7 @@ BEGIN
   CALL InitializeFavoriteInputs3;
   CALL InitializeFavoriteInputs4;
   CALL InitializeFavoriteInputs5;
+  CALL InitializeTwoFavoriteUsersTable;
 END$$
 DELIMITER ;
 
@@ -696,6 +721,7 @@ BEGIN
   CALL InitializeFavoriteInputs3;
   CALL InitializeFavoriteInputs4;
   CALL InitializeFavoriteInputs5;
+  CALL InitializeTwoFavoriteUsersTable;
 END$$
 DELIMITER ;
 
@@ -727,7 +753,7 @@ DROP PROCEDURE InitializeFavoriteInputs2;
 DROP PROCEDURE InitializeFavoriteInputs3;
 DROP PROCEDURE InitializeFavoriteInputs4;
 DROP PROCEDURE InitializeFavoriteInputs5;
-
+DROP PROCEDURE InitializeTwoFavoriteUsersTable;
 
 -- Call procedures
 CALL ReinitializeItemsTable;
@@ -757,6 +783,7 @@ CALL InitializeFavoriteInputs2;
 CALL InitializeFavoriteInputs3;
 CALL InitializeFavoriteInputs4;
 CALL InitializeFavoriteInputs5;
+CALL InitializeTwoFavoriteUsersTable;
 
 -- Check if items table exist
 SELECT count(*)
@@ -768,6 +795,7 @@ AND table_name = 'items';
 DROP TABLE favorites;
 DROP TABLE reviews;
 DROP TABLE items;
+DROP TABLE twofavoriteusers;
 
 SELECT * FROM Users;
 
@@ -787,8 +815,43 @@ DELETE FROM users WHERE Username='TestUser5';
 -- on emp1.employee_name > emp2.employee_name
 -- and emp1.task = emp2.task
 
-SELECT user1.FavoriteUser 
-FROM favorites AS user1
-INNER JOIN favorites AS user2
-ON user1.Username > user2.Username 
-AND user1.FavoriteUser = user2.FavoriteUser; 
+SELECT * FROM favorites;
+
+CREATE TABLE TwoFavoriteUsers AS (SELECT fav1.Username AS Username1, fav2.Username AS Username2, fav1.FavoriteUser 
+FROM favorites AS fav1
+INNER JOIN favorites AS fav2
+ON fav1.Username > fav2.Username 
+AND fav1.FavoriteUser = fav2.FavoriteUser);
+
+SELECT * FROM twofavoriteusers;
+
+SELECT * FROM items WHERE Username LIKE (SELECT FavoriteUser 
+FROM twofavoriteusers
+WHERE Username1 LIKE 'TestUser' OR Username1 LIKE 'TestUser2' AND Username2 LIKE 'TestUser' OR Username2 LIKE 'TestUser2'); 
+
+
+SELECT * FROM Users WHERE Username NOT IN (SELECT Username 
+FROM items 
+WHERE Username 
+IN (SELECT Owner
+FROM reviews 
+WHERE Quality = 'excellent' 
+GROUP BY (Owner)
+HAVING COUNT(Quality) >= 3));
+
+SELECT * FROM Users WHERE Username NOT IN (SELECT DISTINCT Username 
+FROM items 
+WHERE Username 
+IN (SELECT Owner
+FROM reviews 
+WHERE Quality = 'poor' 
+GROUP BY (Owner)
+HAVING COUNT(Quality) > 0)
+);
+
+
+
+
+
+
+

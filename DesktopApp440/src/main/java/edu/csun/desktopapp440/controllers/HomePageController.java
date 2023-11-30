@@ -13,8 +13,12 @@ import edu.csun.desktopapp440.database.UsersDatabase;
 import edu.csun.desktopapp440.objects.Items;
 import edu.csun.desktopapp440.objects.Reviews;
 import edu.csun.desktopapp440.objects.Users;
+import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -33,6 +37,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
@@ -59,7 +64,11 @@ public class HomePageController implements Initializable {
     @FXML
     private ListView<String> userSearchListView;
     @FXML
-    private TextField searchField,FirstCategory,SecondCategory,User1,User2;
+    private TextField searchField,FirstCategory,SecondCategory;
+    @FXML
+    private ChoiceBox<String> User1;
+    @FXML
+    private ChoiceBox<String> User2;
     @FXML
     private Label statusLabel;
     @FXML
@@ -436,12 +445,7 @@ public class HomePageController implements Initializable {
             }
             case "Favorites From User X and User Y" -> {
                 homePageHBox.setSpacing(10);
-                User1 = new TextField();
-                User2 = new TextField();
-                User1.setPromptText("User 1");
-                User1.setPrefWidth(100);
-                User2.setPromptText("User 2");
-                User2.setPrefWidth(100);
+                initializeUserDropdown();
                 homePageHBox.getChildren().addAll(
                         searchChoiceBox,
                         User1,
@@ -479,6 +483,36 @@ public class HomePageController implements Initializable {
             }
         }
     }
+
+    private void initializeUserDropdown() {
+        User1 = new ChoiceBox<String>();
+        User2 = new ChoiceBox<String>();
+        ObservableList<String> usernameList = getUsernamesFromDatabase();
+        User1.setItems(usernameList);
+        User1.setPrefWidth(100);
+        User2.setItems(usernameList);
+        User2.setPrefWidth(100);
+    }
+
+    private ObservableList<String> getUsernamesFromDatabase() {
+        String query = "SELECT Username FROM users";
+        List<String> usernameList = new ArrayList<>();
+        try (Connection dbConnection = new UsersDatabase().getDatabaseConnection()) {
+            PreparedStatement checkIfTableExistsStatement =
+                    dbConnection.prepareStatement(query);
+            ResultSet resultSet = checkIfTableExistsStatement.executeQuery();
+            resultSet.next();
+            while(resultSet.next()) {
+                usernameList.add(resultSet.getString(1));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return FXCollections.observableList(usernameList);
+    }
+
+
 
     //Requirement for #1 Gets the highest priced item in each category
     private void GetHighestPriceInEachCategory() {
@@ -625,7 +659,23 @@ public class HomePageController implements Initializable {
 
     //Requirement #5 runs the query
     private void queryFavoriteFromUserXAndY(){
-
+        String query = "SELECT * FROM users WHERE Username LIKE (SELECT FavoriteUser " +
+                "FROM twofavoriteusers " +
+                "WHERE Username1 LIKE ? OR Username1 LIKE ? AND Username2 LIKE ? OR Username2 LIKE ?)";
+        try (Connection dbConnection = new UsersDatabase().getDatabaseConnection()) {
+            PreparedStatement prepareQuery =
+                    dbConnection.prepareStatement(query);
+            prepareQuery.setString(1, User1.getValue());
+            prepareQuery.setString(2, User2.getValue());
+            prepareQuery.setString(3, User1.getValue());
+            prepareQuery.setString(4, User2.getValue());
+            ResultSet resultSet = prepareQuery.executeQuery();
+            while (resultSet.next()) {
+                userSearchListView.getItems().addAll(resultSet.getString(1));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     //Requirement for #5 checks the input
@@ -635,6 +685,25 @@ public class HomePageController implements Initializable {
 
     //Requirement for #6 runs the query no need to check input
     private void NeverPostedExcellentItem() {
+        clickable = false;
+        String query = "SELECT * FROM Users WHERE Username NOT IN (SELECT DISTINCT Username " +
+                "FROM items " +
+                "WHERE Username " +
+                "IN (SELECT Owner " +
+                "FROM reviews " +
+                "WHERE Quality = 'excellent' " +
+                "GROUP BY (Owner) " +
+                "HAVING COUNT(Quality) >= 3))";
+        try (Connection dbConnection = new UsersDatabase().getDatabaseConnection()) {
+            PreparedStatement prepareQuery =
+                    dbConnection.prepareStatement(query);
+            ResultSet resultSet = prepareQuery.executeQuery();
+            while (resultSet.next()) {
+                userSearchListView.getItems().addAll(resultSet.getString(1));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     //Requirement for #7
@@ -642,18 +711,16 @@ public class HomePageController implements Initializable {
         clickable = false;
         try{
             Connection connection = new UsersDatabase().getDatabaseConnection();
-            String query = "SELECT DISTINCT reviewer " +
-                    "FROM reviews review1 " +
-                    "WHERE NOT EXISTS(" +
-                    "SELECT * " +
-                    "FROM reviews review2 " +
-                    "WHERE review1.reviewer = review2.reviewer " +
-                    "AND review2.Quality = 'poor')";
+            String query = "SELECT * FROM Users WHERE Username NOT IN (SELECT Reviewer " +
+                    "FROM reviews " +
+                    "WHERE Quality = 'poor' " +
+                    "GROUP BY (Reviewer) " +
+                    "HAVING COUNT(Quality) > 0)";
             PreparedStatement ps = connection.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                userSearchListView.getItems().addAll(rs.getString("Reviewer"));
+                userSearchListView.getItems().addAll(rs.getString(1));
             }
         }
         catch (SQLException e){
@@ -688,6 +755,26 @@ public class HomePageController implements Initializable {
 
     //Requirement for #9
     private void NoPoorItemReviews() {
+        clickable = false;
+        String query = "SELECT * FROM Users WHERE Username NOT IN (SELECT DISTINCT Username " +
+                "FROM items " +
+                "WHERE Username " +
+                "IN (SELECT Owner " +
+                "FROM reviews " +
+                "WHERE Quality = 'poor' " +
+                "GROUP BY (Owner) " +
+                "HAVING COUNT(Quality) > 0) " +
+                ")";
+        try (Connection dbConnection = new UsersDatabase().getDatabaseConnection()) {
+            PreparedStatement prepareQuery =
+                    dbConnection.prepareStatement(query);
+            ResultSet resultSet = prepareQuery.executeQuery();
+            while (resultSet.next()) {
+                userSearchListView.getItems().addAll(resultSet.getString(1));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
