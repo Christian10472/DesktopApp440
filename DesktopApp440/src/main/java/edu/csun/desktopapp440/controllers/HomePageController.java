@@ -140,8 +140,6 @@ public class HomePageController implements Initializable {
                 initializeOrReinitializeTables(dbConnection, resultSet);
             }
 
-
-
         } catch (SQLException e) {
             throw new RuntimeException(
                     String.format("SQL Error: %s", e.getMessage()));

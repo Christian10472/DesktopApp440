@@ -6,7 +6,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -29,16 +28,16 @@ public class AddItemController {
     }
 
     @FXML
-    private Label TitleOfPageLabel;
+    private Label titleOfPageLabel;
 
     @FXML
-    private TextArea DescriptionTextArea;
+    private TextArea descriptionTextArea;
 
     @FXML
-    private TextField ItemCatagoryTextField,ItemPriceTextField, ItemTitleTextField;
+    private TextField itemCatagoryTextField, itemPriceTextField, itemTitleTextField;
 
     @FXML
-    private Label TitleLabel, CatagoryLabel, PriceLabel, DescriptionLabel,tooManyItems;
+    private Label titleLabel, catagoryLabel, priceLabel, descriptionLabel,tooManyItems;
 
 
     /**
@@ -70,10 +69,10 @@ public class AddItemController {
      */
     public void onAddButtonAction(ActionEvent event) {
         if (checkInput() && canUserAddItem(user.getUsername())) {
-            title = ItemTitleTextField.getText();
-            category = ItemCatagoryTextField.getText();
-            description = DescriptionTextArea.getText();
-            price = Double.parseDouble(ItemPriceTextField.getText());
+            title = itemTitleTextField.getText();
+            category = itemCatagoryTextField.getText();
+            description = descriptionTextArea.getText();
+            price = Double.parseDouble(itemPriceTextField.getText());
             addItem();
             clearInput();
         }
@@ -84,14 +83,14 @@ public class AddItemController {
      * labels if any errors were made
      */
     private void clearInput() {
-        ItemTitleTextField.clear();
-        ItemCatagoryTextField.clear();
-        DescriptionTextArea.clear();
-        ItemPriceTextField.clear();
-        TitleLabel.setText("");
-        CatagoryLabel.setText("");
-        PriceLabel.setText("");
-        DescriptionLabel.setText("");
+        itemTitleTextField.clear();
+        itemCatagoryTextField.clear();
+        descriptionTextArea.clear();
+        itemPriceTextField.clear();
+        titleLabel.setText("");
+        catagoryLabel.setText("");
+        priceLabel.setText("");
+        descriptionLabel.setText("");
     }
 
 
@@ -103,22 +102,22 @@ public class AddItemController {
         boolean valid=true;
 
 
-        if (ItemTitleTextField.getText().isEmpty()) {
-            TitleLabel.setText("Please enter a title");
+        if (itemTitleTextField.getText().isEmpty()) {
+            titleLabel.setText("Please enter a title");
             valid=false;
         }
-        if (ItemCatagoryTextField.getText().isEmpty()) {
-            CatagoryLabel.setText("Please enter a Category");
+        if (itemCatagoryTextField.getText().isEmpty()) {
+            catagoryLabel.setText("Please enter a Category");
             valid = false;
         }
-        if(DescriptionTextArea.getText().isEmpty()) {
-            DescriptionLabel.setText("Please enter a description");
+        if(descriptionTextArea.getText().isEmpty()) {
+            descriptionLabel.setText("Please enter a description");
             valid = false;
         }
         try {
-            Double.parseDouble(ItemPriceTextField.getText());
+            Double.parseDouble(itemPriceTextField.getText());
         } catch (NumberFormatException e) {
-            PriceLabel.setText("Please enter a valid price");
+            priceLabel.setText("Please enter a valid price");
             valid = false;
         }
         System.out.println("got to end of validation");
@@ -174,7 +173,7 @@ public class AddItemController {
             preparedStatement.setDouble(5, price);
             preparedStatement.setDate(6, java.sql.Date.valueOf(LocalDate.now()));
             preparedStatement.executeUpdate();
-            TitleOfPageLabel.setText("Item Added");
+            titleOfPageLabel.setText("Item Added");
             dbConnection.close();
         } catch (SQLException e) {
             throw new RuntimeException(String.format("SQL Error: %s", e.getMessage()));

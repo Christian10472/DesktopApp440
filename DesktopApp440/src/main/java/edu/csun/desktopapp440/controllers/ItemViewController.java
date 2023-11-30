@@ -20,7 +20,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
@@ -30,59 +29,65 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Date;
 import java.util.ArrayList;
 
 public class ItemViewController {
 
-    @FXML
-    private Label itemTitleLabel,CategoryLabel,DescriptionLabel,PriceLabel,SameUserLabel;
 
     @FXML
-    private TextArea ReviewTextArea;
+    public Button favoriteButton;
+
+    @FXML
+    private Label userLabel, itemTitleLabel, categoryLabel, descriptionLabel, priceLabel, SameUserLabel;
+
+    @FXML
+    private TextArea reviewTextArea;
 
     private Users user;
 
-    private String Category,Description,Title,username;
+    private String category, description, title, username;
 
     private Items items;
     private ArrayList<Reviews> reviews;
 
-    private double Price;
+    private double price;
 
 
-
-    public void initialiseItemViewController(Users users , Items items, ArrayList<Reviews> reviews){
+    public void initialiseItemViewController(Users users, Items items, ArrayList<Reviews> reviews) {
         this.reviews = reviews;
         user = users;
-        this.items= items;
+        this.items = items;
 
         username = items.getUsername();
-        Title = items.getTitle();
-        Category = items.getCategory();
-        Description = items.getDescription();
-        Price = items.getPrice();
+        title = items.getTitle();
+        category = items.getCategory();
+        description = items.getDescription();
+        price = items.getPrice();
 
         populateLabels();
         populateReviewList();
     }
 
-    public void populateLabels(){
-        itemTitleLabel.setText(Title);
-        CategoryLabel.setText(Category);
-        PriceLabel.setText(String.valueOf(Price));
-        DescriptionLabel.setWrapText(true);
-        DescriptionLabel.setText(Description);
+    public void populateLabels() {
+        if(checkIfFavoriteExist()) {
+            favoriteButton.setText("Un-favorite User");
+        }
+        userLabel.setText(username);
+        itemTitleLabel.setText(title);
+        categoryLabel.setText(category);
+        priceLabel.setText(String.valueOf(price));
+        descriptionLabel.setWrapText(true);
+        descriptionLabel.setText(description);
     }
 
-    public void populateReviewList(){
-        if(reviews.isEmpty()){
-            ReviewTextArea.setText("No reviews yet");
+    public void populateReviewList() {
+        if (reviews.isEmpty()) {
+            reviewTextArea.setText("No reviews yet");
             return;
         }
         StringBuilder review = new StringBuilder();
-        ReviewTextArea.setWrapText(true);
-        ReviewTextArea.setEditable(false);
+        reviewTextArea.setWrapText(true);
+        reviewTextArea.setEditable(false);
         for (Reviews value : reviews) {
             review.append("User: ").append(value.getReviewer()).append("\n")
                     .append("Date Posted: ").append(value.getDatePosted()).append("\n")
@@ -91,17 +96,17 @@ public class ItemViewController {
                     .append("==================================").append("\n");
         }
 
-        ReviewTextArea.setText(review.toString());
+        reviewTextArea.setText(review.toString());
     }
 
     public void onBackClick(ActionEvent event) throws IOException {
-        try{
+        try {
             URL addITemURL = getClass().getResource("/templates/HomePage.fxml");
-            if (addITemURL == null){
+            if (addITemURL == null) {
                 throw new NullPointerException("Missing resources on: HomePage.fxml");
             }
             FXMLLoader loader = new FXMLLoader(addITemURL);
-            Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(loader.load()));
             HomePageController controller = loader.getController();
             controller.initialiseHomepage(user);
@@ -111,24 +116,96 @@ public class ItemViewController {
         }
     }
 
-    public void onAddReviewClick(ActionEvent event){
-        if(user.getUsername().equals(username)){
+    public void onAddReviewClick(ActionEvent event) {
+        if (user.getUsername().equals(username)) {
             SameUserLabel.setText("You cannot review your own item");
-        }
-        else
+        } else
             try {
-            URL addITemURL = getClass().getResource("/templates/AddReview.fxml");
-            if (addITemURL == null) {
-                throw new NullPointerException("Missing resources on: AddReview.fxml");
+                URL addITemURL = getClass().getResource("/templates/AddReview.fxml");
+                if (addITemURL == null) {
+                    throw new NullPointerException("Missing resources on: AddReview.fxml");
+                }
+                FXMLLoader loader = new FXMLLoader(addITemURL);
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(loader.load()));
+                AddReviewController controller = loader.getController();
+                controller.initialiseAddReviewController(user, items, reviews);
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            FXMLLoader loader = new FXMLLoader(addITemURL);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(loader.load()));
-            AddReviewController controller = loader.getController();
-            controller.initialiseAddReviewController(user, items,reviews);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+    }
+
+    public void onFavoriteClick(ActionEvent event) {
+        if(!checkIfFavoriteExist()) {
+            addUserToFavorites();
+            favoriteButton.setText("Un-favorite User");
+        } else {
+            removeUserFromFavorites();
+            favoriteButton.setText("Favorite User");
         }
+    }
+
+    private boolean removeUserFromFavorites() {
+        final String removeUserFromFavorites =
+                "DELETE FROM favorites " +
+                        "WHERE Username = ? " +
+                        "AND FavoriteUser = ?";
+
+        try (Connection dbConnection = new UsersDatabase().getDatabaseConnection()) {
+            PreparedStatement checkIfTableExistsStatement =
+                    dbConnection.prepareStatement(removeUserFromFavorites);
+            checkIfTableExistsStatement.setString(1, user.getUsername());
+            checkIfTableExistsStatement.setString(2, items.getUsername());
+            checkIfTableExistsStatement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return true;
+    }
+    private boolean addUserToFavorites() {
+        final String addUserToFavorites =
+                "INSERT INTO favorites (" +
+                        "Username, " +
+                        "FavoriteUser" +
+                        ")" +
+                        " VALUES (" +
+                        " ? , " +
+                        " ? " +
+                        ")";
+
+        try (Connection dbConnection = new UsersDatabase().getDatabaseConnection()) {
+            PreparedStatement checkIfTableExistsStatement =
+                    dbConnection.prepareStatement(addUserToFavorites);
+            checkIfTableExistsStatement.setString(1, user.getUsername());
+            checkIfTableExistsStatement.setString(2, items.getUsername());
+            checkIfTableExistsStatement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return true;
+    }
+
+    private boolean checkIfFavoriteExist() {
+        final String checkIfFavoritesExists =
+                "SELECT count(*) " +
+                        "FROM favorites " +
+                        "WHERE Username = ? " +
+                        "AND FavoriteUser = ?;";
+
+        try (Connection dbConnection = new UsersDatabase().getDatabaseConnection()) {
+            PreparedStatement checkIfTableExistsStatement =
+                    dbConnection.prepareStatement(checkIfFavoritesExists);
+            checkIfTableExistsStatement.setString(1, user.getUsername());
+            checkIfTableExistsStatement.setString(2, items.getUsername());
+            ResultSet resultSet = checkIfTableExistsStatement.executeQuery();
+            resultSet.next();
+            if(resultSet.getInt(1) <= 0) {
+                return false;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return true;
     }
 }
