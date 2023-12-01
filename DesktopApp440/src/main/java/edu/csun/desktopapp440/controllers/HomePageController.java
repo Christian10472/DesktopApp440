@@ -825,6 +825,64 @@ public class HomePageController implements Initializable {
         }
     }
 
+    //Methopd for Number10
+    private void UsersWhoGaveEachOtherExcellent(){
+        try {
+            clickable = false;
+            Connection connection = new UsersDatabase().getDatabaseConnection();
+            String query = "SELECT A.username AS user_A, B.username AS user_B\n" +
+                    "    FROM users A\n" +
+                    "    CROSS JOIN users B\n" +
+                    "    WHERE A.username < B.username\n" +
+                    "    AND NOT EXISTS (\n" +
+                    "        SELECT 1\n" +
+                    "        FROM items i\n" +
+                    "        WHERE i.username = A.username\n" +
+                    "        AND NOT EXISTS (\n" +
+                    "            SELECT 1\n" +
+                    "            FROM reviews r\n" +
+                    "            WHERE r.itemId = i.itemId\n" +
+                    "            AND r.reviewer = B.username\n" +
+                    "            AND r.quality = 'excellent'\n" +
+                    "        )\n" +
+                    "    )\n" +
+                    "    AND EXISTS (\n" +
+                    "        SELECT 1\n" +
+                    "        FROM reviews r\n" +
+                    "        WHERE r.reviewer = B.username\n" +
+                    "      )\n" +
+                    "    AND NOT EXISTS (\n" +
+                    "        SELECT 1\n" +
+                    "        FROM items i\n" +
+                    "        WHERE i.username = B.username\n" +
+                    "        AND NOT EXISTS (\n" +
+                    "            SELECT 1\n" +
+                    "            FROM reviews r\n" +
+                    "            WHERE r.itemID = i.itemID\n" +
+                    "            AND r.reviewer = A.username\n" +
+                    "            AND r.quality = 'excellent'\n" +
+                    "        )\n" +
+                    "\tAND EXISTS (\n" +
+                    "        SELECT 1\n" +
+                    "        FROM reviews r\n" +
+                    "        WHERE r.reviewer = B.username\n" +
+                    "      )\n" +
+                    "    );";
+            PreparedStatement ps = connection.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                String newRow = String.format("%-20s%-15s",
+                        rs.getString("user_A"),
+                        rs.getString("user_B"));
+                userSearchListView.getItems().addAll(newRow);
+            }
+        }
+        catch (SQLException e){
+            String.format("SQL Error: %s", e.getMessage());
+        }
+    }
+
 
     public void clearHbox() {
         homePageHBox.getChildren().clear();
