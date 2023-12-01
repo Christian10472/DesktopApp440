@@ -89,7 +89,8 @@ public class HomePageController implements Initializable {
             "Users who never posted a Excellent item",
             "Users who never posted a poor review",
             "Only Poor Item Reviews",
-            "No Poor Item Reviews"};
+            "No Poor Item Reviews",
+            "List a user pair (A, B) such that they always gave each other excellent reviews"};
     private boolean clickable = true;
 
     public void initialiseHomepage(Users user) {
@@ -400,6 +401,7 @@ public class HomePageController implements Initializable {
         switch (searchChoiceBox.getValue()) {
             case "Category" -> {
                 homePageHBox.setSpacing(10);
+                searchField.setText(null);
                 homePageHBox.getChildren().addAll(
                         searchChoiceBox,
                         searchField,
@@ -409,6 +411,7 @@ public class HomePageController implements Initializable {
             }
             case "Highest Price in Each Category" -> {
                 homePageHBox.setSpacing(375);
+                searchField.setText(null);
                 homePageHBox.getChildren().addAll(
                         searchChoiceBox,
                         LogOutButton);
@@ -437,13 +440,14 @@ public class HomePageController implements Initializable {
                 Region spacer1 = new Region();
                 spacer1.setPrefWidth(10);
                 Region spacer2 = new Region();
-                spacer2.setPrefWidth(50);
+                spacer2.setPrefWidth(40);
+                searchField.setText(null);
                 searchField.setPromptText("Enter Username");
                 homePageHBox.getChildren().addAll(
                         searchChoiceBox,
                         spacer1,
                         searchField,
-                        spacer2,
+                        SearchButton,
                         LogOutButton);
             }
             case "Most Posts On Certain Day" -> {
@@ -493,6 +497,13 @@ public class HomePageController implements Initializable {
                         searchChoiceBox,
                         LogOutButton);
                 NoPoorItemReviews();
+            }
+            case "List a user pair (A, B) such that they always gave each other excellent reviews" -> {
+                homePageHBox.setSpacing(375);
+                homePageHBox.getChildren().addAll(
+                        searchChoiceBox,
+                        LogOutButton);
+                UsersWhoGaveEachOtherExcellent();
             }
         }
     }
@@ -566,15 +577,32 @@ public class HomePageController implements Initializable {
 
     //Requirement for #2 runs the query gets the users who posted into 2 different categories x and y on the same day z
     private void queryTwoItemsSameDay() {
+        clickable = false;
         try{
             Connection connection = new UsersDatabase().getDatabaseConnection();
-            String query = "SELECT * FROM items WHERE (Category LIKE ? OR Category LIKE ?) AND DatePosted = ? Order By Username;";
-            PreparedStatement ps = connection.prepareStatement(query);
-            ps.setString(1,"%"+FirstCategory.getText()+"%");
-            ps.setString(2,"%"+SecondCategory.getText()+"%");
-            ps.setDate(3, java.sql.Date.valueOf(Dates.getValue()));
-            ResultSet rs = ps.executeQuery();
-            populateWithItems(rs);
+            String categoriesList = FirstCategory.getText() + "," + SecondCategory.getText();
+            String[] categoriesArray = categoriesList.split(",");
+            StringBuilder sqlQuery = new StringBuilder("SELECT Username FROM items WHERE DatePosted = ? AND (");
+
+            for (int i = 0; i < categoriesArray.length; i++) {
+                sqlQuery.append("Category LIKE ?");
+                if (i < categoriesArray.length - 1) {
+                    sqlQuery.append(" OR ");
+                }
+            }
+            sqlQuery.append(") GROUP BY Username, DatePosted HAVING COUNT(DISTINCT Category) >= ")
+                    .append(categoriesArray.length)
+                    .append(" ORDER BY Username");
+            PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery.toString());
+          preparedStatement.setString(1, String.valueOf(Date.valueOf(Dates.getValue())));
+
+            for (int i = 0; i < categoriesArray.length; i++) {
+                preparedStatement.setString(i + 2, "%" + categoriesArray[i].trim() + "%");
+            }
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                userSearchListView.getItems().addAll(resultSet.getString(1));
+            }
         }
         catch (SQLException e){
             String.format("SQL Error: %s", e.getMessage());
@@ -593,30 +621,37 @@ public class HomePageController implements Initializable {
 
     //Requirement for #3 runs the query and gets all users who have items with only excellent or good reviews
     private void queryUserXAllExcellentOrGood() {
+        clickable = true;
         try {
-            boolean AllGood = true;
             Connection connection = new UsersDatabase().getDatabaseConnection();
-            String query = "Select * from Reviews where Username = ?";
+            String query = "SELECT i.ItemId, i.Title ,i.Category ,i.Price,i.Username, i.Description " +
+                    "FROM items i INNER JOIN reviews r " +
+                    "ON i.ItemId = r.ItemId WHERE i.Username = ? " +
+                    "GROUP BY i.ItemId, i.Title, i.Username " +
+                    "HAVING COUNT(CASE WHEN r.Quality NOT IN ('Excellent', 'Good') THEN 1 END) = 0";
             PreparedStatement ps = connection.prepareStatement(query);
-            ps.setString(1,searchField.getText());
+            ps.setString(1, searchField.getText());
             ResultSet rs = ps.executeQuery();
 
-            while (rs.next()){
-                if(rs.getString("Quality").equals("fair") ||
-                        rs.getString("Quality").equals("poor")){
-                    AllGood = false;
-                    break;
+            if (!rs.isBeforeFirst()) {
+                System.out.println("No items found for the specified user or criteria.");
+            } else {
+                //Get all items and display them on Search Window
+                while (rs.next()) {
+                    String id = String.valueOf(rs.getInt("ItemId"));
+                    String title = String.valueOf(rs.getString("Title"));
+                    String category = String.valueOf(rs.getString("Category"));
+                    String price = String.valueOf(rs.getDouble("Price"));
+                    String username = String.valueOf(rs.getString("Username"));
+                    String description = String.valueOf(rs.getString("Description"));
+                    String newRow = String.format("%-5s %-18s %-30s %-8s %-15s %-30s",
+                            id, title, category, price, username, description);
+                    userSearchListView.getItems().addAll(newRow);
                 }
             }
-            if (AllGood){
-                query = "SELECT * from Items where Username = ?";
-                ps = connection.prepareStatement(query);
-                ps.setString(1,searchField.getText());
-                rs = ps.executeQuery();
-                populateWithItems(rs);
-            }
         } catch (SQLException e) {
-            String.format("SQL Error: %s", e.getMessage());
+            e.printStackTrace();
+            // Handle the SQL exception here
         }
     }
 
