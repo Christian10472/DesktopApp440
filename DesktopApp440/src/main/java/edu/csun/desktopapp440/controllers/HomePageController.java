@@ -850,7 +850,8 @@ public class HomePageController implements Initializable {
                     "        SELECT 1\n" +
                     "        FROM reviews r\n" +
                     "        WHERE r.reviewer = B.username\n" +
-                    "      )\n" +
+                    "        AND r.quality = 'excellent'\n" +
+                    "\t)\n" +
                     "    AND NOT EXISTS (\n" +
                     "        SELECT 1\n" +
                     "        FROM items i\n" +
@@ -862,12 +863,13 @@ public class HomePageController implements Initializable {
                     "            AND r.reviewer = A.username\n" +
                     "            AND r.quality = 'excellent'\n" +
                     "        )\n" +
+                    "\t)\n" +
                     "\tAND EXISTS (\n" +
                     "        SELECT 1\n" +
                     "        FROM reviews r\n" +
-                    "        WHERE r.reviewer = B.username\n" +
-                    "      )\n" +
-                    "    );";
+                    "        WHERE r.reviewer = A.username\n" +
+                    "        AND r.quality = 'excellent'\n" +
+                    "\t);";
             PreparedStatement ps = connection.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
 
