@@ -17,7 +17,7 @@
       <TextField fx:id="itemTitleTextField" layoutX="235.0" layoutY="104.0" />
       <TextField fx:id="itemPriceTextField" layoutX="235.0" layoutY="140.0" />
       <TextField fx:id="itemCatagoryTextField" layoutX="235.0" layoutY="175.0" />
-      <TextArea fx:id="descriptionTextArea" layoutX="235.0" layoutY="206.0" prefHeight="127.0" prefWidth="149.0" />
+      <TextArea fx:id="descriptionTextArea" layoutX="235.0" layoutY="206.0" prefHeight="127.0" prefWidth="149.0" wrapText="true"/>
       <Button fx:id="addButton" layoutX="235.0" layoutY="342.0" mnemonicParsing="false" onAction="#onAddButtonAction" prefHeight="32.0" prefWidth="48.0" text="Add" wrapText="true" />
       <Button fx:id="backButton" layoutX="336.0" layoutY="342.0" mnemonicParsing="false" onAction="#onBackButtonAction" prefHeight="32.0" prefWidth="48.0" text="Back" />
       <Label fx:id="titleLabel" layoutX="403.0" layoutY="103.0" prefHeight="25.0" prefWidth="179.0" textFill="RED" />

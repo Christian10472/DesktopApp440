@@ -290,19 +290,32 @@ public class HomePageController implements Initializable {
                     rs.getInt("ItemId"),
                     rs.getString("Username"),
                     rs.getString("Title"),
-                    rs.getString("Description"),
                     rs.getString("Category"),
+                    rs.getString("Description"),
                     rs.getDouble("Price"),
                     rs.getDate("DatePosted")
             ));
-            //Only show id, title, Category, and Price on Search Table
-            String newRow = String.format("%-5s%-20s%-25s%-8s",
-                    items.get(i).getItemId(),
-                    items.get(i).getTitle(),
-                    items.get(i).getCategory(),
-                    items.get(i).getPrice());
+            // Only show id, title, Category, and Price on the Search Table
+            int id = items.get(i).getItemId();
+            String title = truncateString(items.get(i).getTitle(), 18);
+            String category = truncateString(items.get(i).getCategory(), 30);
+            double price = items.get(i).getPrice();
+            String username = truncateString(items.get(i).getUsername(), 15);
+            String description = truncateString(items.get(i).getDescription(), 30);
+
+            String newRow = String.format("%-5s %-18s %-30s %-8s %-15s %-30s",
+                    id, title, category, price, username, description);
             userSearchListView.getItems().addAll(newRow);
             i++;
+        }
+    }
+
+    // Truncate a string to a specified length
+    private String truncateString(String input, int maxLength) {
+        if (input.length() > maxLength) {
+            return input.substring(0, maxLength - 4) + "...";
+        } else {
+            return input;
         }
     }
 
