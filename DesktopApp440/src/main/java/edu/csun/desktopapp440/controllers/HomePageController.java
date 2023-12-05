@@ -831,49 +831,59 @@ public class HomePageController implements Initializable {
             clickable = false;
             Connection connection = new UsersDatabase().getDatabaseConnection();
             String query = "SELECT A.username AS user_A, B.username AS user_B\n" +
-                    "    FROM users A\n" +
-                    "    CROSS JOIN users B\n" +
-                    "    WHERE A.username < B.username\n" +
+                    "FROM users A\n" +
+                    "CROSS JOIN users B\n" +
+                    "WHERE A.username < B.username\n" +
+                    "AND EXISTS (\n" +
+                    "    SELECT 1\n" +
+                    "    FROM items i1\n" +
+                    "    WHERE i1.username = A.username\n" +
+                    ")\n" +
+                    "AND EXISTS (\n" +
+                    "    SELECT 1\n" +
+                    "    FROM items i2\n" +
+                    "    WHERE i2.username = B.username\n" +
+                    ")\n" +
+                    "AND NOT EXISTS (\n" +
+                    "    SELECT 1\n" +
+                    "    FROM items i\n" +
+                    "    WHERE i.username = A.username\n" +
                     "    AND NOT EXISTS (\n" +
                     "        SELECT 1\n" +
-                    "        FROM items i\n" +
-                    "        WHERE i.username = A.username\n" +
-                    "        AND NOT EXISTS (\n" +
-                    "            SELECT 1\n" +
-                    "            FROM reviews r\n" +
-                    "            WHERE r.itemId = i.itemId\n" +
-                    "            AND r.reviewer = B.username\n" +
-                    "            AND r.quality = 'excellent'\n" +
-                    "        )\n" +
+                    "        FROM reviews r\n" +
+                    "        WHERE r.itemId = i.itemId\n" +
+                    "        AND r.reviewer = B.username\n" +
+                    "        AND r.quality = 'excellent'\n" +
                     "    )\n" +
-                    "    AND EXISTS (\n" +
-                    "        SELECT 1\n" +
-                    "        FROM reviews r\n" +
-                    "        WHERE r.reviewer = B.username\n" +
-                    "        AND r.quality = 'excellent'\n" +
-                    "\t)\n" +
+                    ")\n" +
+                    "AND EXISTS (\n" +
+                    "    SELECT 1\n" +
+                    "    FROM reviews r\n" +
+                    "    WHERE r.reviewer = B.username\n" +
+                    "    AND r.quality = 'excellent'\n" +
+                    ")\n" +
+                    "AND NOT EXISTS (\n" +
+                    "    SELECT 1\n" +
+                    "    FROM items i\n" +
+                    "    WHERE i.username = B.username\n" +
                     "    AND NOT EXISTS (\n" +
                     "        SELECT 1\n" +
-                    "        FROM items i\n" +
-                    "        WHERE i.username = B.username\n" +
-                    "        AND NOT EXISTS (\n" +
-                    "            SELECT 1\n" +
-                    "            FROM reviews r\n" +
-                    "            WHERE r.itemID = i.itemID\n" +
-                    "            AND r.reviewer = A.username\n" +
-                    "            AND r.quality = 'excellent'\n" +
-                    "        )\n" +
-                    "\t)\n" +
-                    "\tAND EXISTS (\n" +
-                    "        SELECT 1\n" +
                     "        FROM reviews r\n" +
-                    "        WHERE r.reviewer = A.username\n" +
+                    "        WHERE r.itemId = i.itemId\n" +
+                    "        AND r.reviewer = A.username\n" +
                     "        AND r.quality = 'excellent'\n" +
-                    "\t);";
+                    "    )\n" +
+                    ")\n" +
+                    "AND EXISTS (\n" +
+                    "    SELECT 1\n" +
+                    "    FROM reviews r\n" +
+                    "    WHERE r.reviewer = A.username\n" +
+                    "    AND r.quality = 'excellent'\n" +
+                    ");";
             PreparedStatement ps = connection.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
-
             while (rs.next()) {
+                System.out.println(rs.getString("user_A") + " " + rs.getString("user_B"));
                 String newRow = String.format("%-20s%-15s",
                         rs.getString("user_A"),
                         rs.getString("user_B"));
