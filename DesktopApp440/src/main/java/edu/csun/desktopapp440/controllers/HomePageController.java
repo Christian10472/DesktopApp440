@@ -705,8 +705,37 @@ public class HomePageController implements Initializable {
         }
     }
 
+    private void dropTwoFavoriteTable() {
+        String initializeQuery =
+                "DROP TABLE twofavoriteusers";
+        try (Connection dbConnection = new UsersDatabase().getDatabaseConnection()) {
+            PreparedStatement prepareQuery =
+                    dbConnection.prepareStatement(initializeQuery);
+            prepareQuery.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private void initializeTwoFavorites() {
+        dropTwoFavoriteTable();
+        String initializeQuery =
+                "CREATE TABLE TwoFavoriteUsers AS (SELECT fav1.Username AS Username1, fav2.Username AS Username2, fav1.FavoriteUser " +
+                "FROM favorites AS fav1 " +
+                "INNER JOIN favorites AS fav2 " +
+                "ON fav1.Username > fav2.Username " +
+                "AND fav1.FavoriteUser = fav2.FavoriteUser)";
+        try (Connection dbConnection = new UsersDatabase().getDatabaseConnection()) {
+            PreparedStatement prepareQuery =
+                    dbConnection.prepareStatement(initializeQuery);
+            prepareQuery.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     //Requirement #5 runs the query
     private void queryFavoriteFromUserXAndY(){
+        initializeTwoFavorites();
         String query = "SELECT * FROM users WHERE Username LIKE (SELECT FavoriteUser " +
                 "FROM twofavoriteusers " +
                 "WHERE Username1 LIKE ? OR Username1 LIKE ? AND Username2 LIKE ? OR Username2 LIKE ?)";
